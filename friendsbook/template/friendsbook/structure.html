@@ -12,20 +12,20 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<style type="text/css">
-		
+
 	</style>
 </head>
 
 <body  style="background-color:#ECEFF1 ">
 
-	
-<nav class="navbar navbar-default navbar-fixed-top" style="background-color:#00897b ">
+
+<nav class="navbar navbar-default navbar-fixed-top" style="background-color:#00897b">
   <div class="container">
     <div class="navbar-header navbar-hover">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
+        <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand " href="/"><font size="3">Friendsbook</font></a>
     </div>
@@ -42,20 +42,38 @@
 							</div>
 					</div>
 				</form>
-      <ul class="nav navbar-nav navbar-right navbar-hover">
-        {% if user.is_authenticated %}
-						<li><a href="/"><div   class="glyphicon glyphicon-user">{{user.username}}</div></a></li>
-					{%endif%}
-					<li><a href={% url 'user_list'%}><div><span class="glyphicon glyphicon-globe"></span></div>  </a></li>
-					<li><a href={% url 'user_list'%}>Chat Room</a></li>
-					
-					<li><a href={% url 'new_post'%}>Create Post</a></li>
-					<li><a href={% url 'logout' %}><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-      </ul>
+	      <ul class="mynav_content nav navbar-nav navbar-right ">
+	        {% if user.is_authenticated %}
+							<li><a href="/"><div   class="glyphicon glyphicon-user">{{user.username}}</div></a></li>
+						{%endif%}
+						<li><a href={% url 'user_list'%}><div class="glyphicon glyphicon-globe"></div>  </a></li>
+						<li><a href={% url 'user_list'%}>Chat Room</a></li>
+
+						<li><a href={% url 'new_post'%}>Create Post</a></li>
+						<li><a href={% url 'logout' %}><div class="glyphicon glyphicon-log-in"></div> Logout</a></li>
+	      </ul>
     </div>
   </div>
 </nav>
+<div class="modal fade" id="myModal" role="dialog">
+	<div class="modal-dialog">
 
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Modal Header</h4>
+			</div>
+			<div class="modal-body">
+				<p>Some text in the modal.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
+</div>
 <div class="container">
 		{% block content %}
 		{% endblock content%}
@@ -73,7 +91,7 @@
 	<script src="{% static 'custom/chatting.js' %}"></script>
 	<script>
 	$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();   
+    $('[data-toggle="tooltip"]').tooltip();
 	});
 	var chat_with="";
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
@@ -81,7 +99,7 @@
 	var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/{{user.username}}/');
 
     socket.onopen = function open() {
-	
+
       console.log('WebSockets connection created.');
     };
 
@@ -90,7 +108,7 @@
 	  var type = data['type'];
 	  var user = data['user'];
 	  //did this logic to satisfy condition
-	  //so that message will recieve only if 
+	  //so that message will recieve only if
 	  //we clicked on the link
 	  if(type=='online'){
 	  var online_user=$('#sidebar ul li a div div').filter(function(){
@@ -108,17 +126,17 @@
 	  }
 	  var text = data['text'];
 	  var fuser = data['fuser'];
-	  
+
 	  if(chat_with!=fuser)	return;
 	  if('{{user.username}}'==user)
       $('#msg-list').append('<span data-placement="right" data-toggle="tooltip" title="'+data['time']+'"> <p class=" text-right list-group-item">' +data['text'] + '</p></span>')
-	  
+
 	  else
 	  $('#msg-list').append('<span data-placement="right" data-toggle="tooltip" title="'+data['time']+'"> <p class="text-left list-group-item">' +data['text'] + '</p></span>')
-	  
+
 	  $('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
 	  $(document).ready(function(){
-		$('[data-toggle="tooltip"]').tooltip();   
+		$('[data-toggle="tooltip"]').tooltip();
 		});
     };
     if (socket.readyState == WebSocket.OPEN) {
@@ -131,7 +149,7 @@
 		var text=document.getElementById("text_message").value;
 		var fuser=chat_with;
 		var user='{{user.username}}';
-		
+
 		var message ={
 			text,fuser,user
 		};
@@ -139,7 +157,7 @@
         document.getElementById("text_message").value="";
         return false;
     });
-	
+
 	function comment(obj){
 	sid=obj.parentNode.parentNode.parentNode.parentNode.id;
 	commentid='comment-'+sid;
@@ -152,7 +170,7 @@
 	  'sid':sid
 	},
 	dataType: 'json',
-	success: function (data) {		
+	success: function (data) {
 		if( data!=0){
 			$('#Allcomments'+sid).append("<p> {{user.username}} :"+data +"</p>");
 			document.getElementById(commentid).value="";
@@ -172,7 +190,7 @@
 		{id=obj.parentNode.parentNode.parentNode.parentNode.id;
 		likeid='comment-'+id;
 		}
-	else	
+	else
 		{id=obj.parentNode.parentNode.parentNode.id;
 		likeid='like-'+id;
 		}
@@ -192,7 +210,7 @@
 		}
 	  });
 	}
-	
+
 	function change_post_comment(obj){
 		type=obj.parentNode.parentNode.parentNode.id;
 		alert("are u sure?");
@@ -230,7 +248,7 @@
 		document.getElementById(id).style.display="block";
 		else
 		document.getElementById(id).style.display="none";
-			
+
 		}
 	function showLiveResult(str){
 	console.log('hii');
@@ -257,7 +275,7 @@
 				content+='<tr><td>'+'<a href='+'/users/'+data[val].fields.slug+'>'+data[val].fields.fname+' '+data[val].fields.lname+'</td></tr>';
 			});
 			content+='</table>'
-			document.getElementById("liveSearchResult").innerHTML=content;		
+			document.getElementById("liveSearchResult").innerHTML=content;
 		}
 		});
 		}

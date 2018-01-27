@@ -14,7 +14,7 @@
 				<button class="button5">More</button>
 				
 					<button class="button6">upload cover</button>
-					<p class="name">Dhisu</p>
+					<p class="name">{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}</p>
 						<div class="pic">
 						{%if User.sid%}
 									{%if User.sid.image%}
