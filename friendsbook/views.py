@@ -9,8 +9,8 @@ from django.template.response import TemplateResponse
 from django.views.generic.edit import CreateView
 from django.views.generic import View
 from django.views import generic
-from .models import Status,Profile,StatusLikes,FriendsWith,Message,Comment,Groups,CommentLikes
-from .forms import CreatePost,SignUpForm,ProfileForm,LoginForm
+from .models import *
+from .forms import *
 from .import views
 import json
 from django.contrib.auth.forms import UserCreationForm
@@ -18,6 +18,64 @@ from django_ajax.decorators import ajax
 from django.http import JsonResponse
 from django.db.models import Q
 from django.core import serializers
+from django.core.serializers import serialize
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from django.utils.encoding import force_text
+from djng.views.crud import NgCRUDView
+from django.template.loader import render_to_string
+
+class PropertyMapView(NgCRUDView):
+	model = Profile
+	fields = ['username','fname','lname','profileCover','slug']
+
+
+
+
+class SubscribeView(FormView):
+	template_name = 'friendsbook/Home.html'
+	form_class = SubscribeForm
+	success_url = reverse_lazy('post')
+
+	def get(self, request, **kwargs):
+		if request.is_ajax():
+			form = self.form_class()
+			return JsonResponse({form.form_name: form.initial})
+		return super(SubscribeView, self).get(request, **kwargs)
+
+	def post(self, request, **kwargs):
+		assert request.is_ajax()
+		return self.ajax(request)
+
+	def ajax(self, request):
+		request_data = json.loads(request.body)
+		form = self.form_class(data=request_data.get(self.form_class.scope_prefix, {}))
+		if form.is_valid():
+			return JsonResponse({'success_url': force_text(self.success_url)})
+		else:
+			return JsonResponse({form.form_name: form.errors}, status=422)
+
+def user_post(request,user,context):
+	comment_list=list()
+	numberOfComments=list()
+	for x in context['status_object']:
+		newcomment=Comment.objects.filter(sid=x.id)
+		numberOfComments.append(newcomment.count())
+		comment_list.append(newcomment)
+	context['status_object']=zip(context['status_object'],comment_list,numberOfComments)
+	chatusers=User.objects.select_related('logged_in_user')
+	for user in chatusers:
+		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
+	context['users']=chatusers
+	return context
+
+
+
+def group_list(request):
+	groups=Groups.objects.all()
+	return groups
+
 
 def user_list_data(request):
 	users = User.objects.select_related('logged_in_user')
@@ -33,6 +91,39 @@ def user_list(request):
 	users = Profile.objects.select_related('username')
 	return render(request, 'chat/chat_list.html', {'users': users})
 
+##searching of user
+
+def friends_list(request,searched_by,context):
+	addfriends_list=list()
+
+	for x in context['data']:
+		if str(x.username)==searched_by:
+			addfriends_list.append(-1)
+		else:
+			user=searched_by
+			fuser=x.username
+			user_obj=User.objects.get(username=user)
+			fuser_obj=User.objects.get(username=fuser)
+			friendship=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
+			if friendship.exists():
+				for y in friendship:
+					if y.confirm_request==2:
+						addfriends_list.append(3)
+					else:
+						checkConnectionDirection=FriendsWith.objects.filter(username=user_obj,fusername=fuser_obj)
+						if checkConnectionDirection.exists():
+							addfriends_list.append(1)
+						else:
+							addfriends_list.append(2)
+			#define
+			#0-send request
+			#1-cancel request
+			#2- confirm request sent by user
+			#3 unfriends( means already friends)
+			else:
+				addfriends_list.append(0)
+	context['data']=zip(context['data'],addfriends_list)
+	return context
 
 class RegistrationView(View):
 	user_class=SignUpForm
@@ -116,9 +207,6 @@ def logout(request):
 #        'profile_form': profile_form
 #    })
 
-def group_list(request):
-	groups=Groups.objects.all()
-	return groups
 
 class PostView(generic.ListView):
 	template_name='uposts/post_list.html'
@@ -127,26 +215,13 @@ class PostView(generic.ListView):
 #use pagination to limit the number of post a user can see
 #update this view later
 	def get_queryset(self):
-	#print(self.request.user.username)
-	#name=self.request.user.username
-	#return Status.objects.filter(username=self.request.user.username).order_by('-time')
+		user=self.request.user.username
+		user=User.objects.get(username=user)
 		return Status.objects.all().select_related('username').order_by('-time')
 
 	def get_context_data(self,**kwargs):
 		context=super(PostView,self).get_context_data(**kwargs)
-		comment_list=list()
-		numberOfComments=list()
-		for x in context['status_object']:
-			newcomment=Comment.objects.filter(sid=x.id)
-			#print(Status.objects.filter(id=x.id))
-			numberOfComments.append(newcomment.count())
-			comment_list.append(newcomment)
-		#print(comment_list)
-		context['status_object']=zip(context['status_object'],comment_list,numberOfComments)
-		chatusers=User.objects.select_related('logged_in_user')
-		for user in chatusers:
-			user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
-		context['users']=chatusers
+		context=user_post(self.request,self.request.user.username,context)
 		context['groups']=group_list(self.request)
 		return context
 
@@ -156,13 +231,68 @@ class PostDetailView(generic.DetailView):
 	template_name='uposts/post_detail.html'
 
 	def get_queryset(self):
+		obj=FriendsView()
 		return Status.objects.all().select_related('username').order_by('-time')
 
 	def get_context_data(self,**kwargs):
 		context=super(PostDetailView,self).get_context_data(**kwargs)
 		context['users']=user_list_data(self.request)
-		context['groups']=group_list(self.request)
 		return context
+
+
+class UploadProfile(View):
+	def get(self, request):
+		user=self.request.username
+		ProfileObj=Profile.objects.get(username=User.objects.get(username=user))
+		return render(self.request,'user/profile.html', {'ProfileObj':ProfileObj})
+
+	def post(self, request):
+		form = UpdateProfile(self.request.POST, self.request.FILES)
+		if form.is_valid():
+			ProfileForm=form.save(commit=False)
+			ProfileForm.username=User.objects.get(username=self.request.user.username)
+			ProfileForm.title="Updated Profile"
+			ProfileForm.privacy='fs'
+			ProfileForm.save()
+			Profile.objects.filter(username=self.request.user).update(sid=Status.objects.get(id=ProfileForm.id))
+			obj=Status.objects.get(id=ProfileForm.id)
+			data = {'is_valid': True,'url':obj.image.url}
+		else:
+			data = {'is_valid': False}
+		return JsonResponse(data)
+
+
+class UploadCover(View):
+	def get(self, request):
+		user=self.request.username
+		CoverObj=Profile.objects.get(username=User.objects.get(username=user))
+		return render(self.request,'user/profile.html', {'CoverObj':CoverObj})
+
+	def post(self, request):
+		form = UpdateCover(self.request.POST, self.request.FILES)
+		if form.is_valid():
+			CoverForm=form.save(commit=False)
+			CoverForm.username=User.objects.get(username=self.request.user.username)
+			CoverForm.title="Updated Cover"
+			CoverForm.privacy='fs'
+			CoverForm.save()
+			Profile.objects.filter(username=self.request.user).update(profileCover=Status.objects.get(id=CoverForm.id))
+			obj=Status.objects.get(id=CoverForm.id)
+			data = {'is_valid': True,'url':obj.image.url}
+		else:
+			data = {'is_valid': False}
+		return JsonResponse(data)
+
+def NewGroup(request):
+	if request.is_ajax():
+		gname=request.GET.get('gname',None)
+		privacy=request.GET.get('privacy',None)
+		Groups.objects.create(
+		gname=gname,
+		privacy=privacy
+		)
+		data = {'is_valid': True,'gname':gname}
+		return JsonResponse(data)
 
 #Comment this
 def index(request):
@@ -173,12 +303,11 @@ def index(request):
 def query(request):
 	id=17
 	username='nishu'
-	print(username + " : "+ " is something else")
 	query_set=likes=Status.objects.filter(id=12)
-	print(username + " : "+ " is something else")
 	query_set=User.objects.all()
 	template_name='friendsbook/home.html'
-	return render(request,template_name,{'data':query_set})
+	form=SubscribeForm(None)
+	return render(request,template_name,{'data':query_set,'form':form})
 
 def create_post(request):
 	if request.method=="POST":
@@ -203,36 +332,39 @@ class FriendsView(generic.ListView):  ##print friendlist of user here
 
 	def get_context_data(self,**kwargs):
 		context=super(FriendsView,self).get_context_data(**kwargs)
-		addfriends_list=list()
-		searched_by=self.request.user.username
-		for x in context['data']:
-			if str(x.username)==searched_by:
-				addfriends_list.append(-1)
-			else:
-				user=searched_by
-				fuser=x.username
-				user_obj=User.objects.get(username=user)
-				fuser_obj=User.objects.get(username=fuser)
-				friendship=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
-				if friendship.exists():
-					for y in friendship:
-						if y.confirm_request==2:
-							addfriends_list.append(3)
-						else:
-							checkConnectionDirection=FriendsWith.objects.filter(username=user_obj,fusername=fuser_obj)
-							if checkConnectionDirection.exists():
-								addfriends_list.append(1)
-							else:
-								addfriends_list.append(2)
-				#define
-				#0-send request
-				#1-cancel request
-				#2- confirm request sent by user
-				#3 unfriends( means already friends)
-				else:
-					addfriends_list.append(0)
-		context['data']=zip(context['data'],addfriends_list)
+		context=friends_list(self.request,self.request.user.username,context)
 		return context
+
+def Timeline_friend_list(request):
+	template_name="user/partial/friends_list.html"
+	print('hello')
+	if request.method == 'GET':
+		friends_list = Profile.objects.all()
+		friends_list = render_to_string(template_name, {'friends_list': friends_list})
+	return JsonResponse(friends_list,safe=False)
+
+def Timeline_photo_frame(request):
+	template_name="user/partial/photo_frame.html"
+	print('hello')
+	if request.method == 'GET':
+		photo_albums = Status.objects.all()
+		photo_albums = render_to_string(template_name, {'photo_albums': photo_albums})
+		return JsonResponse(photo_albums,safe=False)
+
+def Timeline_posts(request):
+	template_name="user/partial/only_post.html"
+	print('done')
+	if request.method=='GET':
+		str=request.GET.get('pathurl')
+		currentusersearch=str.split("/")
+		currentusersearch=(currentusersearch[3].split("-")[0])
+		user=User.objects.get(username=currentusersearch)
+		context={}
+		context['status_object']=Status.objects.filter(username=user).select_related('username').order_by('-time')
+		context=user_post(request,user.username,context)
+		status= render_to_string(template_name, {'status_object': context['status_object']})
+		return JsonResponse(status,safe=False)
+
 
 ##this is for profile
 class  FriendView(generic.DetailView):
@@ -243,7 +375,7 @@ class  FriendView(generic.DetailView):
 	def get_context_data(self,**kwargs):
 		context=super(FriendView,self).get_context_data(**kwargs)
 		searched_by=self.request.user.username
-		context['status_object']=Status.objects.filter(username=User.objects.get(username=context['User'].username))
+		context['status_object']=Status.objects.filter(username=User.objects.get(username=context['User'].username)).order_by('-time')
 		comment_list=list()
 		numberOfComments=list()
 		for x in context['status_object']:
@@ -257,6 +389,8 @@ class  FriendView(generic.DetailView):
 		for user in chatusers:
 			user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
 		context['users']=chatusers
+		context['photo_albums']=Status.objects.filter(username=context['User'].username)
+		context['friends_list']=Profile.objects.all().select_related('username')
 		return context
 
 def liveSearch(request):
@@ -294,7 +428,6 @@ def like(request):
 				StatusLikes.objects.filter(username=User.objects.get(username=username),sid=Status.objects.get(id=id)).delete()
 			return JsonResponse(likes,safe=False)
 		if type=="comment_like":
-			print(id)
 			check=CommentLikes.objects.filter(username=User.objects.get(username=username)).filter(cid=Comment.objects.get(slug=id))
 			likes=Comment.objects.get(slug=id).likes
 			if not check.exists():
@@ -341,45 +474,24 @@ def user_messages(request):
 #3 unfriends( means already friends)
 
 def AddFriend(request):
-	print("incoming")
 	if request.is_ajax():
 		fuser=request.GET.get('fuser',None)
 		type=request.GET.get('type',None)
 		user=request.user.username
-		print(user)
-		print(fuser)
-		print(type)
 		user_obj=User.objects.get(username=user)
-		print(type)
 		fuser_obj=User.objects.get(username=fuser)
-		print("mytype")
-		print("in")
 		##check again these conditions to make it more secure and reliable
 		#not completed
 		if type=='0':
-			print("created relation")
 			FriendsWith.objects.create(username=user_obj,fusername=fuser_obj)
 		elif type=='1' or type=='3':
-			print("deleted")
 			#write code to update te result
 			abc=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
 			FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj)).delete()
-			if abc.exists():
-				print("done13")
-			else:
-				print("not ok13")
 		elif type=='2':
-			print("updation in progress")
-			print(user)
-			print(fuser)
 			FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj)).update(confirm_request=2)
 			abc=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
-			if abc.exists():
-				print("done2")
-			else:
-				print("not ok2")
 		result=1
-		print("ok")
 		return JsonResponse(result,safe=False)
 
 def AddComment(request):
@@ -391,3 +503,9 @@ def AddComment(request):
 		sid=Status.objects.get(id=sid)
 		Comment.objects.create(username=user_obj,text=text,sid=sid)
 		return JsonResponse(text,safe=False)
+
+class PartialGroupView(TemplateView):
+	def get_context_data(self, **kwargs):
+		context = super(PartialGroupView, self).get_context_data(**kwargs)
+	# update the context
+		return context

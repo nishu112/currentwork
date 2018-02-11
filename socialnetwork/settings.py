@@ -14,7 +14,15 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SETTINGS_DIR = os.path.dirname(__file__)
 
+
+PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
+PROJECT_PATH = os.path.abspath(PROJECT_PATH)
+
+
+
+FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -25,7 +33,7 @@ SECRET_KEY = 'xk6s6q(tq(!@li$4_0yu^!k6+d*v&gm0l&yq6^m7+#qv(j)he1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = 'login'
 
@@ -41,6 +49,8 @@ INSTALLED_APPS = [
 	'friendsbook',
     'channels',
 	'django_ajax',
+    'djng',
+    'easy_thumbnails',
 ]
 
 
@@ -140,6 +150,7 @@ USE_TZ = False #TimeZone
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/Friendsbook/socialnetwork/friendsbook/static/',
+	 ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
 ]
 
 STATIC_URL = '/static/'
