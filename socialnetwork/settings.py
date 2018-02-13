@@ -49,8 +49,7 @@ INSTALLED_APPS = [
 	'friendsbook',
     'channels',
 	'django_ajax',
-    'djng',
-    'easy_thumbnails',
+    
 ]
 
 
