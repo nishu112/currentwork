@@ -1,0 +1,45 @@
+{% extends "friendsbook/structure.html" %}
+{% block content %}
+{% load static %}
+{%block head%}
+	<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
+	<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
+	<link href="{% static 'css/pages/cover.css' %}" rel="stylesheet">
+{%endblock head%}
+<div class="container"><br><br><br>
+	<div class="row">
+		<div class="col-sm-9">
+			<div class="row ">
+				<div class="background_pic_design">
+
+					{%if User.profileCover.image%}
+						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("{{User.profileCover.image.url}}");'>
+					{%else%}
+						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("/static/img/cover.jpg");"'>
+					{%endif%}
+
+					<p class="name">{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}</p>
+					</div>
+				</div>
+			</div>
+
+
+
+		</div>
+	</div>
+
+</div>
+
+
+
+
+<script>
+
+
+</script>
+{% endblock %}
+
+
+{%block javascript%}
+
+{% endblock %}

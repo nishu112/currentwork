@@ -1,4 +1,4 @@
-{%for comment,likes in comments%}
+{%for comment in comments%}
 				<div class="row particularcomment" id="{{comment.id}}">
 				<hr>
 					<div class="col-sm-2" >
@@ -23,21 +23,21 @@
 						{%endifequal%}
 						</div>
 						<div class="Status_comments row">
-						
-						{% if user in feed.get_likers %}
+						<small>
+						{% if comment.is_like %}
 						 <a href="javascript:void(0)" style="text-decoration: none;" class="like unlike" type="Comment_like">
 						   <span class="glyphicon glyphicon-thumbs-up"></span>
 						   <span class="text">Unlike</span>
-						   (<span class="like-count">{{likes}}</span>)
+						   (<span class="like-count">{{comment.likes}}</span>)
 						 </a>
 					   {% else %}
 						 <a href="javascript:void(0)" style="text-decoration: none;" class="like" type="Comment_like">
 						   <span class="glyphicon glyphicon-thumbs-up"></span>
 						   <span class="text">Like</span>
-						   (<span class="like-count">{{likes}} </span>)
+						   (<span class="like-count">{{comment.likes}} </span>)
 						 </a>
 					   {% endif %}
-
+						</small>
 						</div>
 					</div>
 					<div class="col-sm-2">
