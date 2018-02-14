@@ -402,8 +402,10 @@ def validate_username(request):
 def like(request):
 	if request.is_ajax():
 		username = request.user.username
-		id=request.GET.get('id',None)
-		type=request.GET.get('type',None)
+		id=request.POST['id']
+		type=request.POST['type']
+		print(id)
+		print(type)
 		if type=="post_like":
 			check=StatusLikes.objects.filter(username=User.objects.get(username=username)).filter(sid=Status.objects.get(id=id))
 			likes=Status.objects.get(id=id).likes
@@ -417,31 +419,41 @@ def like(request):
 				likes=likes-1
 				Status.objects.filter(id=id).update(likes=likes)
 				StatusLikes.objects.filter(username=User.objects.get(username=username),sid=Status.objects.get(id=id)).delete()
-			return JsonResponse(likes,safe=False)
-		if type=="comment_like":
-			check=CommentLikes.objects.filter(username=User.objects.get(username=username)).filter(cid=Comment.objects.get(slug=id))
-			likes=Comment.objects.get(slug=id).likes
+			return HttpResponse(likes)
+		if type=="Comment_like":
+			print('not done')
+			check=CommentLikes.objects.filter(username=User.objects.get(username=username)).filter(cid=Comment.objects.get(id=id))
+			print('1 done')
+			likes=Comment.objects.get(id=id).likes
+			print('calculated')
 			if not check.exists():
 				#print("inside")
 				likes=likes+1
-				Comment.objects.filter(slug=id).update(likes=likes)
-				like=CommentLikes(username=User.objects.get(username=username),cid=Comment.objects.get(slug=id))
+				Comment.objects.filter(id=id).update(likes=likes)
+				like=CommentLikes(username=User.objects.get(username=username),cid=Comment.objects.get(id=id))
 				like.save()
 			else:
 				likes=likes-1
-				Comment.objects.filter(slug=id).update(likes=likes)
-				CommentLikes.objects.filter(username=User.objects.get(username=username),cid=Comment.objects.get(slug=id)).delete()
-			return JsonResponse(likes,safe=False)
+				Comment.objects.filter(id=id).update(likes=likes)
+				CommentLikes.objects.filter(username=User.objects.get(username=username),cid=Comment.objects.get(id=id)).delete()
+			print(likes)
+			print('check')
+			return HttpResponse(likes)
 
 #ajax
 def deleteCommentPost(request):
 	if request.is_ajax():
-		id=request.GET.get('id',None)
-		type=request.GET.get('type',None)
-		if type=='comment':
-			Comment.objects.get(slug=id).delete()
-		if type=='status':
+		id=request.POST['id']
+		type=request.POST['type']
+		print(id)
+		print('trying')
+		print(type)
+		if type=='delete_comment':
+			Comment.objects.get(id=id).delete()
+			print('Comment deleted')
+		if type=='delete_status':
 			Status.objects.get(id=id).delete()
+			print('status deleted')
 		response=1
 		return JsonResponse(response,safe=False)
 #ajax function
@@ -485,15 +497,31 @@ def AddFriend(request):
 		result=1
 		return JsonResponse(result,safe=False)
 
-def AddComment(request):
+
+def Comments(request):
 	if request.is_ajax():
-		username=request.user.username
-		text=request.GET.get('text',None)
-		sid=request.GET.get('sid',None)
-		user_obj=User.objects.get(username=username)
-		sid=Status.objects.get(id=sid)
-		Comment.objects.create(username=user_obj,text=text,sid=sid)
-		return JsonResponse(text,safe=False)
+		if request.method=="POST":
+			user=request.user
+			sid=request.POST['Status']
+			text=request.POST['post']
+			sid=Status.objects.get(id=sid)
+			comment=Comment.objects.create(username=user,text=text,sid=sid)
+			noOflikesonComment=CommentLikes.objects.filter(cid=comment.id)
+			likes=noOflikesonComment.count()
+			jsonobj=render_to_string('uposts/partials/comment.html', {'comment': comment,'likes':likes},request)
+			return JsonResponse(jsonobj,safe=False)
+		else:
+			sid=request.GET.get('sid',None)
+			comments=Comment.objects.filter(sid=Status.objects.get(id=sid)).select_related('username')
+			numberOfCommentlikes=list()
+			for x in comments:
+				newcomment=CommentLikes.objects.filter(cid=x.id)
+				numberOfCommentlikes.append(newcomment.count())
+			comments=zip(comments,numberOfCommentlikes)
+			jsonobj=render_to_string('uposts/partials/comments.html', {'comments': comments},request)
+			return JsonResponse(jsonobj,safe=False)
+			#below methods are not working? because of some unknown issues
+			return render(request, 'uposts/partials/comments.html',{'comments': comments})
 
 class PartialGroupView(TemplateView):
 	def get_context_data(self, **kwargs):
