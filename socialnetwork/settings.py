@@ -22,7 +22,7 @@ PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 
 
 
-FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -49,7 +49,8 @@ INSTALLED_APPS = [
 	'friendsbook',
     'channels',
 	'django_ajax',
-    
+    'django.contrib.humanize',
+
 ]
 
 

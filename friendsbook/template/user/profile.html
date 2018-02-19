@@ -7,23 +7,22 @@
 	<link href="{% static 'css/pages/cover.css' %}" rel="stylesheet">
 {%endblock head%}
 <div class="container"><br><br><br>
-	<div class="row">
+	<div class="row ">
 		<div class="col-sm-9">
-			<div class="row ">
+			<div class="row profile " profilefor="{{User.username}}">
 				<div class="background_pic_design">
-
 					{%if User.profileCover.image%}
 						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("{{User.profileCover.image.url}}");'>
 					{%else%}
 						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("/static/img/cover.jpg");"'>
 					{%endif%}
-					<button onclick="profileshowstatus()" class="button1">Timeline</button>
-					<button class="button2">About</button>
-					<button onclick="profileshowfriendlist()" class="button3">Friends</button>
-					<button onclick="profileshowphoto()" class="button4">Photos</button>
-					<button class="button5">More</button>
+					<button class="btn btn-default button1">Timeline</button>
+					<button class="btn btn-default button2">About</button>
+					<button class="btn btn-default button3">Friends</button>
+					<button class="btn btn-default button4">Photos</button>
+					<button class="btn btn-default button5">More</button>
 					{% ifequal User.username.username user.username  %}
-					<div class="button6" style="margin-bottom: 20px;">
+					<div class="btn button6" style="margin-bottom: 20px;">
 						<button type="button" class="btn btn-primary js-upload-photos" id="mycover">
 
 						  <span class="glyphicon glyphicon-cloud-upload"></span> Upload Cover
@@ -36,7 +35,7 @@
 					</div>
 					{%endifequal%}
 					<p class="name">{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}</p>
-						<div class="pic"  onmouseout="notdisplaychangebutton()" onmouseover="displaychangebutton()">
+						<div class="pic" >
 						{%if User.sid%}
 									{%if User.sid.image%}
 										<img class="img-rounded" id="my_profile_pic"  src="{{ User.sid.image.url}}" alt="My image" width="200" height="200"/>
@@ -46,7 +45,7 @@
 						{%endif%}
 						{% ifequal User.username.username user.username  %}
 						<div class="button7" >
-						<button type="button" class="btn btn-primary js-upload-photos" id="mypic">
+						<button type="button" class="btn btn-primary js-upload-photos" id="mypic" style="display:none">
 						  <span class="glyphicon glyphicon-cloud-upload"></span> Upload Profile Picture
 						</button>
 
@@ -95,269 +94,70 @@
 
 
 <script>
+$(function () {
+	$(document).on("click", "#cover_background .button1", function () {
+		username=$($(this).closest('.profile')).attr('profilefor')
+		$.ajax({
+			url: '/ajax/users/profile/status/',
+					data:{
+						'username':username
+					},
+			type:'get',
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('profileonclickbuttons').innerHTML=data;
+			}
+		  });
+		});
 
-function profileshowfriendlist(){
-	var pathurl='{{request.path}}';
-	$.ajax({
-        url: '/ajax/users/profile/friend_list/',
-		data:{
-					pathurl:pathurl
-				},
-		type:'get',
-        dataType: 'json',
-        success: function (data) {
-			console.log(data);
-			document.getElementById('profileonclickbuttons').innerHTML=data;
+	$(document).on("click", "#cover_background .button3", function () {
+		username=$($(this).closest('.profile')).attr('profilefor')
+		$.ajax({
+			url: '/ajax/users/profile/friend_list/',
+			data:{
+						'username':username
+					},
+			type:'get',
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('profileonclickbuttons').innerHTML=data;
+			}
+		  });
+	});
 
-        }
-      });
-    }
+	$(document).on("click", "#cover_background .button4", function () {
+		username=$($(this).closest('.profile')).attr('profilefor')
+		$.ajax({
+			url: '/ajax/users/profile/photoframe/',
+			data:{
+						'username':username
+					},
+			type:'get',
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('profileonclickbuttons').innerHTML=data;
+			}
+		  });
+		});
+{% ifequal User.username.username user.username  %}
+	$('.pic').on("mouseenter",function(){
+		$('#mypic').show()
+	});
 
-function profileshowphoto(){
-	var pathurl='{{request.path}}';
-	console.log(pathurl);
-	$.ajax({
-        url: '/ajax/users/profile/photoframe/',
-		data:{
-					pathurl:pathurl
-				},
-		type:'get',
-        dataType: 'json',
-        success: function (data) {
-			console.log(data);
-			document.getElementById('profileonclickbuttons').innerHTML=data;
+	$('.pic').on("mouseleave",function(){
+		$('#mypic').hide()
+	});
+{%endifequal%}
 
-        }
-      });
-    }
-
-function profileshowstatus(){
-	var pathurl='{{request.path}}';
-	console.log(pathurl);
-	$.ajax({
-        url: '/ajax/users/profile/status/',
-				data:{
-					pathurl:pathurl
-				},
-		type:'get',
-        dataType: 'json',
-        success: function (data) {
-			console.log(data);
-			document.getElementById('profileonclickbuttons').innerHTML=data;
-
-        }
-      });
-
-}
+});
 
 
-
-function displaychangebutton(){
-var prop='display:block;opacity:1;background-color: #008CBA;color: white;'
-document.getElementById('mypic').style.display='block'
-
-}
-
-function notdisplaychangebutton(){
-document.getElementById('mypic').style.display='none'
-}
 </script>
 {% endblock %}
 
 
 {%block javascript%}
-<script>
-$(function () {
+<script src="{% static 'js/posts/posts.js' %}"></script>
 
-	$("div.upper_post").on("click", ".like", function () {
-		console.log("working");
-		var type=$(this).attr("type");
-    var li = $(this).closest("li");
-    var id = $(li).attr("post-id");
-		var upper_post=$(this).closest(".upper_post")
-    var csrf = $(li).attr("csrf");
-		console.log(id)
-		console.log(type)
-    $.ajax({
-      url: '/ajax/like_post/',
-      data: {
-				'id':id,
-				'type':type,
-        'csrfmiddlewaretoken': csrf,
-      },
-      type: 'POST',
-      cache: false,
-      success: function (data) {
-				console.log($(".like .text", li));
-        if ($(".like", upper_post).hasClass("unlike")) {
-          $(".like", upper_post).removeClass("unlike");
-          $(".like .text", upper_post).text("Like");
-        }
-        else {
-          $(".like", upper_post).addClass("unlike");
-          $(".like .text", upper_post).text("Unlike");
-        }
-        $(".like .like-count", upper_post).text(data);
-				console.log(data)
-      }
-    });
-    return false;
-  });
-
-$("div.upper_post").on("click", ".delete_status", function () {
- console.log('delete post')
-	var li = $(this).closest("li");
-	var id = $(li).attr("post-id");
-	var upper_post=$(this).closest(".upper_post")
-	var csrf = $(li).attr("csrf");
-	type=$(this).attr('class')
-
-	$.ajax({
-		url: '/ajax/deleteCommentPost/',
-		data: {
-			'id':id,
-			'type':type,
-			'csrfmiddlewaretoken': csrf,
-		},
-		type: 'POST',
-		cache: false,
-		success: function (data) {
-			console.log("Delete status")
-			$(li).fadeOut(400, function () {
-          $(li).remove();
-        });
-		}
-	});
-
-});
-
-
-	$("div.Allcomments").on("click", ".like", function () {
-		console.log("comment likes")
-    id=$(this).closest('.particularcomment').attr('id')
-		type=$(this).attr('type')
-		particularcomment=$(this).closest('.particularcomment')
-		 var li = $(this).closest("li");
-		var csrf = $(li).attr("csrf");
-		console.log(id);
-		console.log(type);
-		$.ajax({
-			url: '/ajax/like_post/',
-			data:{
-				'id':id,
-				'type':type,
-				'csrfmiddlewaretoken': csrf,
-			},
-			type:'POST',
-			dataType: 'json',
-			success: function (data) {
-        if ($(".like", particularcomment).hasClass("unlike")) {
-          $(".like", particularcomment).removeClass("unlike");
-          $(".like .text", particularcomment).text("Like");
-        }
-        else {
-          $(".like", particularcomment).addClass("unlike");
-          $(".like .text", particularcomment).text("Unlike");
-        }
-        $(".like .like-count", particularcomment).text(data);
-			}
-
-	});
-});
-
-
-$("div.Allcomments").on("click", ".delete_comment", function () {
-	console.log("delete comment ")
-	id=$(this).closest('.particularcomment').attr('id')
-	type=$(this).attr('class')
-	particularcomment=$(this).closest('.particularcomment')
-	var li = $(this).closest("li");
-	var csrf = $(li).attr("csrf");
-	console.log(id);
-	console.log(type);
-
-	$.ajax({
-		url: '/ajax/deleteCommentPost/',
-		data:{
-			'id':id,
-			'type':type,
-			'csrfmiddlewaretoken': csrf,
-		},
-		type:'POST',
-		dataType: 'json',
-		success: function (data) {
-			console.log("Deleted the comments")
-			$(particularcomment).fadeOut(400, function () {
-          $(particularcomment).remove();
-        });
-		}
-
-});
-});
-
-
-$("div.post_button").on("click", ".comment", function () {
-	var li = $(this).closest("li");
-	if($(".comments", li).css('display') != 'none')
-			{
-				$(".comments", li).slideUp();
-			}
-	else
-	{
-		$(".comments", li).show();
-		$(".comments input[name='post']", li).focus();
-		var sid = $(li).attr("post-id");
-		$.ajax({
-		url: '/ajax/loadcomment/',
-		data:{
-			'sid':sid,
-		},
-		type:'GET',
-		dataType: 'json',
-		beforeSend: function () {
-          $(".Allcomments", li).html("<li class='loadcomment'><img src='/static/img/loading.gif'></li>");
-        },
-		success: function (data) {
-			$(".Allcomments", li).html(data);
-			return;
-			}
-		});
-		}
-
-});
-
-
-$(".comments").on("keydown", "input[name='post']", function (evt){
-	 var keyCode = evt.which?evt.which:evt.keyCode;
-	 if (keyCode == 13) {
-		 var form = $(this).closest("form");
-		 var container = $(this).closest(".comments");
-		 var input = $(this);
-		 $.ajax({
-			 url: '/ajax/loadcomment/',
-			 data: $(form).serialize(),
-			 type: 'POST',
-			 cache: false,
-			 beforeSend: function () {
-				 $(input).val("");
-			 },
-			 success: function (data) {
-				 $(".Allcomments", container).append(data);
-				 if ($(".Allcomments li", container).hasClass("empty")) {
-					 console.log("yep")
-          deletedelement= $(".Allcomments li", container);
-					 $(deletedelement).fadeOut(400, function () {
-		           $(deletedelement).remove();
-		         });
-					 }
-			 }
-		 });
-		 return false;
-	 }
- });
-
-});
-
-</script>
 
 {% endblock %}

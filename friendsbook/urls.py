@@ -31,9 +31,15 @@ urlpatterns = [
     url(r'^ajax/deleteCommentPost/$', views.deleteCommentPost, name='deleteCommentPost'),
 	url(r'^ajax/UpdateProfile/$',views.UploadProfile.as_view(),name='UpdateProfile'),
     url(r'^ajax/UpdateCover/$',views.UploadCover.as_view(),name='UpdateCover'),
+    url(r'^ajax/groupUpdateCover/$',views.UploadGroupCover,name='groupUpdateCover'),
     url(r'^ajax/CreateGroup/$', login_required(views.NewGroup), name='NewGroup'),
     url(r'^chat-room/$', login_required(views.user_list), name='user_list'),
-    url(r'^groups/(?P<slug>[\w.@+-]+)$', login_required(views.GroupsView.as_view()), name='Groups'),
+    url(r'^groups/(?P<pk>\d+)$', login_required(views.grouphome), name='GroupsHomepage'),
+    url(r'^ajax/groupMembers/$', login_required(views.LoadGroupMembers), name='GroupsMembers'),
+    url(r'^ajax/groupPosts/$', login_required(views.LoadGroupPosts), name='GroupsPosts'),
+    url(r'^ajax/groupPhotoFrames/$', login_required(views.LoadGroupPhotos), name='Groupsphotos'),
+    url(r'^ajax/addnewMembertoGroup/$', login_required(views.AddMembers), name='addgroupmember'),
+
     url(r'^groups/$', login_required(views.grouphome), name='GroupsHome'),
     #validate_username
 ]

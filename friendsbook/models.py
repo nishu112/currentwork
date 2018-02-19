@@ -17,13 +17,12 @@ class LoggedInUser(models.Model):
 
 
 class Status(models.Model):
-    title=models.CharField(max_length=20,default="updated status",null=True)
+    title=models.CharField(max_length=30,default="updated status",null=True)
     username = models.ForeignKey(User,on_delete=models.CASCADE,related_name='fbuser')
     text = models.TextField(blank=True, null=True)
     image = models.FileField(upload_to="media/image",null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
     privacy = models.CharField(max_length=5, blank=True, null=True,default="fs")
-    gid = models.IntegerField(blank=True, null=True)
     slug = models.SlugField(null=False,unique=True,blank=False)
     likes=models.IntegerField(default=0)
 
@@ -151,8 +150,7 @@ class Groups(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     id = models.AutoField(primary_key=True)
     privacy = models.CharField(max_length=5)
-    sid=models.ForeignKey(Status,on_delete=models.SET_NULL,null=True,blank=True)
-    cover=models.ForeignKey(Status,on_delete=models.SET_NULL,null=True,blank=True,related_name='cover_photo')
+    cover=models.ForeignKey(Status,on_delete=models.SET_NULL,null=True,blank=True)
     #for group photo
 
     class Meta:
@@ -162,9 +160,19 @@ class Groups(models.Model):
 class ConsistOf(models.Model):
     username = models.ForeignKey(User,on_delete=models.CASCADE,related_name='groupuser')
     gid =models.ForeignKey(Groups,on_delete=models.CASCADE,related_name='groupid')
-    gadmin = models.SmallIntegerField()
+    gadmin = models.SmallIntegerField(default=0)
     time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'consist_of'
         verbose_name_plural = "consist_of"
+        unique_together = ("gid", "username")
+
+class GroupContainsStatus(models.Model):
+    gid=models.ForeignKey(Groups,on_delete=models.CASCADE)
+    sid=models.ForeignKey(Status,on_delete=models.CASCADE)
+    #for group photo
+
+    class Meta:
+        db_table='GroupContainsStatus'
+        verbose_name_plural = "GroupContainsStatus"

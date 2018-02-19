@@ -5,7 +5,7 @@
 <head >
 	<title>{% block title %}Friendsbook{% endblock %}</title>
 	<meta charset="utf-8" />
-	<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 	<link rel="stylesheet" href="{% static 'css/home.css' %}" type = "text/css"/>
 	<link rel="stylesheet" href="{% static 'css/notification.css' %}" type = "text/css"/>
@@ -22,7 +22,7 @@
 <body  style="">
 
 {%include "friendsbook/header.html"%}
-<div class="container">
+<div class="container-fluid">
 {%include "groups/create_groups.html"%}
 		{% block content %}
 		{% endblock content%}
