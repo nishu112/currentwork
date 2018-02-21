@@ -11,8 +11,6 @@ from django.core.exceptions import ValidationError
 
 
 
-
-
 class SignUpForm(ModelForm):
 	password = forms.CharField(
 		widget=forms.PasswordInput(attrs={'class':'form-control'}),
@@ -32,6 +30,24 @@ class CreatePost(ModelForm):
 	class Meta:
 		model=Status
 		fields = ["text","image","privacy"]
+
+class CreateGroup(ModelForm):
+	OPEN = 'OP'
+	CLOSED = 'CL'
+	PRIVACY_CHOICES = (
+		(OPEN, 'OPEN'),
+		(CLOSED, 'CLOSED'),
+	)
+	gname=forms.CharField(
+		widget=forms.TextInput(attrs={'class':'form-control'}),
+		max_length=35,
+		required=True)
+	privacy=forms.ChoiceField(widget = forms.Select(attrs={'class':'form-control'}),
+                     choices=PRIVACY_CHOICES, initial='CL', required = True)
+
+	class Meta:
+		model=Groups
+		fields=["gname","privacy"]
 
 class LoginForm(ModelForm):
 

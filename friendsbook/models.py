@@ -147,10 +147,20 @@ class CommentLikes(models.Model):
 
 
 class Groups(models.Model):
+    OPEN = 'OP'
+    CLOSED = 'CL'
+    PRIVACY_CHOICES = (
+        (OPEN, 'OPEN'),
+        (CLOSED, 'CLOSED'),
+    )
     gname = models.CharField(max_length=20)
     time = models.DateTimeField(auto_now_add=True)
     id = models.AutoField(primary_key=True)
-    privacy = models.CharField(max_length=5)
+    privacy = models.CharField(
+        max_length=2,
+        choices=PRIVACY_CHOICES,
+        default=CLOSED,
+    )
     cover=models.ForeignKey(Status,on_delete=models.SET_NULL,null=True,blank=True)
     #for group photo
 
@@ -168,12 +178,3 @@ class ConsistOf(models.Model):
         db_table = 'consist_of'
         verbose_name_plural = "consist_of"
         unique_together = ("gid", "username")
-
-class GroupContainsStatus(models.Model):
-    gid=models.ForeignKey(Groups,on_delete=models.CASCADE)
-    sid=models.ForeignKey(Status,on_delete=models.CASCADE)
-    #for group photo
-
-    class Meta:
-        db_table='GroupContainsStatus'
-        verbose_name_plural = "GroupContainsStatus"

@@ -50,10 +50,7 @@ def Check_user_online(request,user):
 	return chatusers
 
 def group_list(request):
-	groups=Groups.objects.all()
-	print(request.user)
 	groups=ConsistOf.objects.filter(username=request.user).select_related('gid')
-	print('group_list')
 	return groups
 
 
@@ -232,7 +229,7 @@ def home(request):
 	posts=Status.objects.filter(username__in=friendsAndMe).select_related('username').order_by('-time')
 	posts=user_post(request,request.user,posts)
 	groups=group_list(request)
-	return render(request,"home/index.html",{'posts':posts,'chatusers':chatusers,'groups':groups,'friends_suggestion':friends_suggestion})
+	return render(request,"home/index.html",{'posts':posts,'chatusers':chatusers,'groups':groups,'friends_suggestion':friends_suggestion,'newGroupForm':CreateGroup(None)})
 
 def grouphome(request,pk):
 	group=get_object_or_404(Groups, id=pk)
@@ -253,10 +250,20 @@ def grouphome(request,pk):
 		else:
 			return JsonResponse(0,safe=False)
 	print(pk)
+
+
+
+	result=ConsistOf.objects.filter(username=request.user,gid=group)
+	print(result)
+
+
+	user_post
+
 	form =CreatePost(None)
 	#check user have the permission to access this group
 	#only then user able to access this method
 	posts=Status.objects.filter(gid=group)
+	posts=user_post(request,request.user,posts)
 	chatusers=Check_user_online(request,request.user)
 	return render(request,"groups/index.html",{'posts':posts,'group':group,'form':form,'chatusers':chatusers})
 
@@ -298,11 +305,12 @@ def UploadGroupCover(request):
 		form=Cover(request.POST,request.FILES)
 		print(request.POST)
 		gid=request.POST['gid']
-
+		group=get_object_or_404(Groups,id=gid)
 		if form.is_valid():
 			cover=form.save(commit=False)
 			cover.username=request.user
 			cover.title="Posted in "
+			cover.gid=group
 			##correct this behavior right now only changing cover for a specific group
 			cover.save()
 			sid=Status.objects.get(id=cover.id)
@@ -374,18 +382,19 @@ class UploadCover(View):
 		return JsonResponse(data)
 
 def NewGroup(request):
-	if request.is_ajax():
-		gname=request.GET.get('gname',None)
-		privacy=request.GET.get('privacy',None)
-		group=Groups.objects.create(
-		gname=gname,
-		privacy=privacy
-		)
-		print('trying')
-		print(group)
-		ConsistOf.objects.create(username=request.user,gid=Groups.objects.get(id=group.id),gadmin=1)
-		data = {'is_valid': True,'gname':gname}
-		return JsonResponse(data)
+	if request.is_ajax() and request.method=='POST':
+		print("Nope")
+		form=CreateGroup(request.POST)
+		if form.is_valid():
+			print(form)
+			newgroup=form.save(commit=False)
+			print('trying')
+			form.save()
+			group=Groups.objects.get(id=newgroup.id)
+			print(newgroup.gname)
+			ConsistOf.objects.create(username=request.user,gid=group,gadmin=1)
+			data = {'is_valid': True,'gname':group.gname,'gid':group.id}
+			return JsonResponse(data)
 
 #Comment this
 def index(request):
@@ -399,7 +408,7 @@ def query(request):
 	query_set=likes=Status.objects.filter(id=12)
 	query_set=User.objects.all()
 	template_name='friendsbook/home.html'
-	form=SubscribeForm(None)
+	form=CreateGroup(None)
 	return render(request,template_name,{'data':query_set,'form':form})
 
 def create_post(request):
