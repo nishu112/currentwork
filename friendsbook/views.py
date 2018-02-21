@@ -38,8 +38,6 @@ def user_post(request,user,posts):
 
 def Check_user_online(request,user):
 	print(user)
-	print('done-------------')
-
 	obj1=FriendsWith.objects.filter(username=user,confirm_request=2).select_related('fusername').values('fusername')
 	obj1=User.objects.filter(id__in=obj1)
 	obj2=FriendsWith.objects.filter(fusername=user,confirm_request=2).select_related('username').values('username')
@@ -79,7 +77,7 @@ def FriendsOfFriends(request,user):
 	for x in chatusers:
 		y=Check_user_online(request,x)
 		friends_suggestion= friends_suggestion | y
-	user=User.objects.filter(username=request.user)
+	user=User.objects.filter(username=user)
 	user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
 	chatusers=user|chatusers
 	friends_suggestion=friends_suggestion|chatusers
@@ -179,6 +177,10 @@ class LoginView(View):
 			auth_login(request,user)
 			return redirect('index')
 		else:
+			print(form.errors)
+			print(form)
+
+
 			return render(request,"user/login.html",{'form':form})
 
 def logout(request):
@@ -213,6 +215,9 @@ def logout(request):
 def home(request):
 	chatusers=Check_user_online(request,request.user)
 	friends_suggestion=FriendsOfFriends(request,request.user)
+	user=User.objects.filter(username=request.user)
+	user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
+	chatusers=chatusers|user
 	friends_suggestion=User.objects.filter(id__in=friends_suggestion).exclude(id__in=chatusers)
 	posts=Status.objects.filter(username__in=chatusers).select_related('username').order_by('-time')
 	posts=user_post(request,request.user,posts)
@@ -229,9 +234,9 @@ def grouphome(request,pk):
 			post=form.save(commit=False)
 			post.username=User.objects.get(username=request.user.username)
 			post.title="Posted in "
+			post.gid=group
 			newstatus=form.save()
 			sid=Status.objects.get(id=post.id)
-			GroupContainsStatus.objects.create(gid=group,sid=sid)
 			posts=Status.objects.filter(id=newstatus.id)
 			posts=render_to_string('uposts/partials/singlepost.html',{'posts':posts},request)
 			return JsonResponse(posts,safe=False)
@@ -241,8 +246,7 @@ def grouphome(request,pk):
 	form =CreatePost(None)
 	#check user have the permission to access this group
 	#only then user able to access this method
-	posts=GroupContainsStatus.objects.filter(gid=group).values('sid')
-	posts=Status.objects.filter(id__in=posts)
+	posts=Status.objects.filter(gid=group)
 	chatusers=Check_user_online(request,request.user)
 	return render(request,"groups/index.html",{'posts':posts,'group':group,'form':form,'chatusers':chatusers})
 
@@ -254,16 +258,15 @@ def LoadGroupMembers(request):
 		for x in members:
 			a=x.username
 		data=render_to_string('groups/partial/group_members.html',{'group_members':members},request)
-		print(data)
 		return JsonResponse(data,safe=False)
 
 def LoadGroupPosts(request):
 	if request.is_ajax:
 		id=request.GET.get('id',None)
-		print(id)
-		posts=user_post(request,request.user,Status.objects.all().select_related('username').order_by('-time'))
+		group=get_object_or_404(Groups,id=id)
+		posts=Status.objects.filter(gid=group).select_related('username').order_by('-time')
+		posts=user_post(request,request.user,posts)
 		data=render_to_string('groups/partial/group_posts.html',{'posts':posts},request)
-		print(data)
 		return JsonResponse(render_to_string('groups/partial/group_posts.html',{'posts':posts},request),safe=False)
 
 def LoadGroupPhotos(request):
@@ -271,7 +274,10 @@ def LoadGroupPhotos(request):
 	if request.is_ajax:
 		id=request.GET.get('id',None)
 		print(id)
-		photo_albums = Status.objects.all()
+		group=get_object_or_404(Groups,id=id)
+		posts=Status.objects.filter(gid=group).select_related('username').order_by('-time')
+		photo_albums=user_post(request,request.user,posts)
+
 		#update this to just load the group photos
 		data = render_to_string(template_name, {'photo_albums': photo_albums})
 		return JsonResponse(data,safe=False)
@@ -292,7 +298,6 @@ def UploadGroupCover(request):
 			sid=Status.objects.get(id=cover.id)
 			Groups.objects.filter(id=gid).update(cover=sid)
 			gid=Groups.objects.get(id=gid)
-			GroupContainsStatus.objects.create(gid=gid,sid=sid)
 			obj=Status.objects.get(id=cover.id)
 			data = {'is_valid': True,'url':obj.image.url}
 		else:
@@ -369,7 +374,6 @@ def NewGroup(request):
 		print('trying')
 		print(group)
 		ConsistOf.objects.create(username=request.user,gid=Groups.objects.get(id=group.id),gadmin=1)
-		print('done')
 		data = {'is_valid': True,'gname':gname}
 		return JsonResponse(data)
 
@@ -428,6 +432,9 @@ class  FriendView(generic.DetailView):
 		print(self.object.username)
 		chatusers=Check_user_online(self.request,self.object.username)
 		friends_suggestion=FriendsOfFriends(self.request,self.request.user)
+		user=User.objects.filter(username=self.object.username)
+		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
+		chatusers=chatusers|user
 		friends_suggestion=User.objects.filter(id__in=friends_suggestion).exclude(id__in=chatusers)
 		posts=Status.objects.filter(username__in=chatusers).select_related('username').order_by('-time')
 		posts=user_post(self.request,self.request.user,posts)
@@ -443,8 +450,9 @@ def Timeline_friend_list(request):
 	if request.method == 'GET':
 		currentusersearch=request.GET.get('username')
 		user=User.objects.get(username=currentusersearch)
+		chatusers=Check_user_online(request,user)
 		#Write query for friends list for a particular user
-		friends_list=FriendList(request,user)
+		friends_list=Profile.objects.filter(username__in=chatusers)
 		friends_list = render_to_string(template_name, {'friends_list': friends_list})
 	return JsonResponse(friends_list,safe=False)
 
@@ -462,7 +470,15 @@ def Timeline_posts(request):
 	if request.method=='GET':
 		currentusersearch=request.GET.get('username')
 		user=User.objects.get(username=currentusersearch)
-		posts=user_post(request,user,Status.objects.all().select_related('username').order_by('-time'))
+
+		chatusers=Check_user_online(request,user)
+		friends_suggestion=FriendsOfFriends(request,user)
+		user=User.objects.filter(username=user)
+		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
+		chatusers=chatusers|user
+		posts=Status.objects.filter(username__in=chatusers).select_related('username').order_by('-time')
+		posts=user_post(request,request.user,posts).select_related('username').order_by('-time')
+
 		status= render_to_string(template_name, {'posts': posts},request)
 		return JsonResponse(status,safe=False)
 
@@ -610,7 +626,6 @@ def Comments(request):
 				x.is_like=CommentLikes.objects.filter(cid=x.id,username=request.user).count()
 
 			jsonobj=render_to_string('uposts/partials/comments.html', {'comments': comments},request)
-			print(jsonobj)
 			return JsonResponse(jsonobj,safe=False)
 			#below methods are not working? because of some unknown issues
 			return render(request, 'uposts/partials/comments.html',{'comments': comments})
