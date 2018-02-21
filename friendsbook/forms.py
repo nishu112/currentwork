@@ -14,6 +14,10 @@ from django.core.exceptions import ValidationError
 
 
 class SignUpForm(ModelForm):
+	password = forms.CharField(
+		widget=forms.PasswordInput(attrs={'class':'form-control'}),
+		max_length=35,
+		required=True)
 	class Meta:
 		model=User
 		fields = ["username","password","password"]
@@ -34,13 +38,13 @@ class LoginForm(ModelForm):
 	username = forms.CharField(
 		widget=forms.TextInput(attrs={'class':'form-control'}),
 		max_length=35,
-		required=True, help_text='Write here your message!',
+		required=True,
 		error_messages={'required': 'Please enter your name hethg'})
 
 	password = forms.CharField(
-		widget=forms.TextInput(attrs={'class':'form-control'}),
+		widget=forms.PasswordInput(attrs={'class':'form-control'}),
 		max_length=35,
-		required=True, help_text='Wrong Pass',
+		required=True,
 		error_messages={'required': 'Wrong password'})
 
 	class Meta:
