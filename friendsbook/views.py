@@ -91,6 +91,22 @@ def FriendList(request,user):
 
 ##searching of user
 
+def friendship(user_obj,fuser_obj):
+	friendship=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
+	if friendship.exists():
+		for y in friendship:
+			if y.confirm_request==2:
+				return 3
+			else:
+				checkConnectionDirection=FriendsWith.objects.filter(username=user_obj,fusername=fuser_obj)
+				if checkConnectionDirection.exists():
+					return 1
+				else:
+					return 2
+	else:
+		return 0
+
+
 def friends_list(request,searched_by,context):
 	addfriends_list=list()
 
@@ -102,19 +118,7 @@ def friends_list(request,searched_by,context):
 			fuser=x.username
 			user_obj=User.objects.get(username=user)
 			fuser_obj=User.objects.get(username=fuser)
-			friendship=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj) |Q(username=fuser_obj,fusername=user_obj))
-			if friendship.exists():
-				for y in friendship:
-					if y.confirm_request==2:
-						addfriends_list.append(3)
-					else:
-						checkConnectionDirection=FriendsWith.objects.filter(username=user_obj,fusername=fuser_obj)
-						if checkConnectionDirection.exists():
-							addfriends_list.append(1)
-						else:
-							addfriends_list.append(2)
-			else:
-				addfriends_list.append(0)
+			addfriends_list.append(friendship(user_obj,fuser_obj))
 	context['data']=zip(context['data'],addfriends_list)
 	return context
 	#define
@@ -435,10 +439,12 @@ class  FriendView(generic.DetailView):
 		user=User.objects.filter(username=self.object.username)
 		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
 		chatusers=chatusers|user
+		context['y']=friendship(self.request.user,self.object.username)
 		friends_suggestion=User.objects.filter(id__in=friends_suggestion).exclude(id__in=chatusers)
 		posts=Status.objects.filter(username__in=chatusers).select_related('username').order_by('-time')
 		posts=user_post(self.request,self.request.user,posts)
 		context['posts']=user_post(self.request,self.request.user,posts)
+
 
 		# modify it to show send friend request
 		context['chatusers']=Check_user_online(self.request,self.request.user)
