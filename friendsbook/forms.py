@@ -26,6 +26,27 @@ class ProfileForm(ModelForm):
 		model=Profile
 		fields= ["fname","lname","emailid","gender"]
 
+class EditAboutGroup(ModelForm):
+
+	about=forms.CharField(
+	widget=forms.Textarea(attrs={'class':'form-control','placeholder':"Write Something about Group "}),
+	label="",required=True)
+
+	class Meta:
+		model=Groups
+		fields=["about"]
+
+class ChattingForm(ModelForm):
+	fusername=forms.CharField(widget=forms.TextInput(attrs={'type':'hidden'}),label="",required=True)
+	text=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}),
+	label="",required=True)
+	class Meta:
+		model=Message
+		fields=["fusername","text"]
+
+
+
+
 
 class ChangePasswordForm(forms.ModelForm):
     id = forms.CharField(widget=forms.HiddenInput())
@@ -67,14 +88,17 @@ class EditProfileForm(ModelForm):
 
 	fname = forms.CharField(
 		widget=forms.TextInput(attrs={'class':'form-control'}),
-		max_length=20,)
+		label="First Name",
+		max_length=20)
 
 	lname = forms.CharField(
 		widget=forms.TextInput(attrs={'class':'form-control'}),
-		max_length=20,)
+		label="Last Name",
+		max_length=20)
 
 	emailid = forms.EmailField(
 	widget=forms.EmailInput(attrs={'class': 'form-control'}),
+	label="Emailid",
 	max_length=30,
 	)
 
@@ -83,7 +107,8 @@ class EditProfileForm(ModelForm):
                                 {
                                     'class':'datepicker form-control',
 
-                                }),
+
+                                }),label="Date of Birth",
 								required = False)
 
 	phone_no = forms.RegexField(regex=r'^\+?1?\d{9,15}$',widget=forms.TextInput(attrs={'class':'form-control'}))
@@ -109,7 +134,8 @@ class CreatePost(ModelForm):
 		cleaned_data = super(CreatePost, self).clean()
 		text = cleaned_data.get('text')
 		image = cleaned_data.get('image')
-		if not text and not image :
+		privacy = cleaned_data.get('privacy')
+		if not text and not image and not privacy or not privacy :
 			raise forms.ValidationError("Don't submit empty")
 
 
@@ -143,6 +169,13 @@ class CreateGroup(ModelForm):
 	class Meta:
 		model=Groups
 		fields=["gname","privacy"]
+
+	def clean(self):
+		cleaned_data = super(CreateGroupPost, self).clean()
+		gname = cleaned_data.get('gname')
+		privacy = cleaned_data.get('privacy')
+		if not gname or not privacy:
+			raise forms.ValidationError("Don't submit empty")
 
 class LoginForm(ModelForm):
 

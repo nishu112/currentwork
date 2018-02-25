@@ -55,20 +55,13 @@
 							<div class="row">
 										<h1>  <strong>About Group : </strong></h1>
 							</div>
-							{%if group.new is 0%}
-							<a class="btn btn-primary" href="{%url 'EditAboutGroup' group.id%}">Edit</a>
-							{%endif%}
-							{%if group.about%}
 							<div class="well">
-								{{group.about}}
-							</div>
-							{%else%}
-							<div class="row">
 
-								<h2>Nothing Here yet</h2>
-
+								<form  action="" method="post">{%csrf_token%}
+									{{form.as_p}}
+									<button class="btn btn-primary" type="submit">Save</button>
+								</form>
 							</div>
-							{%endif%}
 					</div>
 
 				</div>

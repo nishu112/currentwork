@@ -46,8 +46,8 @@
 
 
   <script>
-
-
+(function( $ ){
+$('[data-toggle="tooltip"]').tooltip();
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/users/');
 	var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/{{user.username}}/');
@@ -80,23 +80,21 @@
 	  }
 	  var text = data['text'];
 	  var fuser = data['fuser'];
-   console.log('send');
+		if('{{user.username}}'!=user)
+	  	{
 
-		console.log("not")
-	  if('{{user.username}}'==user)
-      $('#msg-list').append('<span data-placement="right" data-toggle="tooltip" title="'+data['time']+'"> <p class=" text-right list-group-item">' +data['text'] + '</p></span>')
+			$('#msg-list').append('<span data-placement="right" data-toggle="tooltip" title="'+data['time']+'"> <p class="text-left list-group-item">' +data['text'] + '</p></span>')
 
-	  else
-	  $('#msg-list').append('<span data-placement="right" data-toggle="tooltip" title="'+data['time']+'"> <p class="text-left list-group-item">' +data['text'] + '</p></span>')
+		  $('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
+			}
 
-	  $('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
-	  $(document).ready(function(){
-		$('[data-toggle="tooltip"]').tooltip();
-		});
+
     };
     if (socket.readyState == WebSocket.OPEN) {
       socket.onopen();
     }
+
+	});
   </script>
 
 	  {% block javascript %}

@@ -19,6 +19,7 @@
 						<li class=" {% if active == 'files' %} active{% endif %}"><a href="{%url 'GroupsFiles' group.id%}">Files</a></li>
 						{%if group_consist.gadmin is 1%}
 						<li class=" {% if active == 'manage' %} active{% endif %}"><a  href="{%url 'GroupManage' group.id%}">Manage </a></li>
+						<li class=" {% if active == 'settings' %} active{% endif %}"><a  href="{%url 'Groupsettings' group.id%}">Settings </a></li>
 						{%endif%}
 						{%endif%}
 					</ul>
