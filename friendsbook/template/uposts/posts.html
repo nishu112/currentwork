@@ -71,7 +71,7 @@
     	</div>
 
       <div class="comments" style="display:none">
-        <form role="form" method="post" action="" onsubmit="return false">
+        <form role="form" class="newcomment" method="post" action="" onsubmit="return false">
           {% csrf_token %}
           <input type="hidden" name="Status" value="{{status.id }}">
           <input type="text" autocomplete="off" class="form-control input-sm" placeholder="Write a comment..." name="post" maxlength="255">

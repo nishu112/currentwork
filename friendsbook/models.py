@@ -291,3 +291,7 @@ class Notification(models.Model):
                 self.gid.id,escape(self.gid.gname))
         else:
             return 'Ooops! Something went wrong.'
+
+        class Meta:
+            db_table='notification'
+            verbose_name_plural = "notification"

@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/photos$', login_required(views.UserPhotos), name='UserPhotos'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChaneProfileInfo$', login_required(views.UserProfileEdit), name='UserProfileEdit'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChangePassword$', login_required(views.UserChangePassword), name='UserChangePassword'),
-    
+
     path('ajax/AddFriend/', views.AddFriend, name='add_friend'),
     path('query/', views.query, name='query'),
     url(r'^ajax/validate_username/$', views.validate_username, name='validate_username'),
@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^ajax/like_post/$', views.like, name='post_like'),
     url(r'^ajax/messages/$', views.user_messages, name='user_messages'),
     url(r'^ajax/loadcomment/$', views.Comments, name='loadcomment'),
+    url(r'^ajax/editcomment/$', views.EditComments, name='Editcomment'),
     url(r'^ajax/deleteCommentPost/$', views.deleteCommentPost, name='deleteCommentPost'),
 	url(r'^ajax/UpdateProfile/$',views.UploadProfile.as_view(),name='UpdateProfile'),
     url(r'^ajax/UpdateCover/$',views.UploadCover.as_view(),name='UpdateCover'),

@@ -96,7 +96,7 @@ margin-top: 50px; border: 0px; width: 270px; background-color: white;" id="liveS
               $("#notifications").popover('hide');
             }
             else {
-              console.log('1st')
+              
               $("#notifications").popover('show');
               $.ajax({
                 url: '/notifications/',
@@ -120,12 +120,12 @@ margin-top: 50px; border: 0px; width: 270px; background-color: white;" id="liveS
               cache: false,
               success: function (data) {
                 if (data != "0") {
-                  console.log("Really")
+
                   $('.badge-notify').html(data)
                   $("#notifications").addClass("new-notifications");
                 }
                 else {
-                  console.log("Nope")
+
                   $("#notifications").removeClass("new-notifications");
                 }
               },

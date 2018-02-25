@@ -1170,6 +1170,26 @@ def Comments(request):
 			return render(request, 'uposts/partials/comments.html',{'comments': comments})
 	return fishy(request)
 
+def EditComments(request):
+	if request.is_ajax() and request.method=='POST':
+		#do validations that user is the owner of comment or not
+		cid=request.POST['cid']
+		text=request.POST['post']
+		if not text:
+			return JsonResponse(0,safe=False)
+		try:
+			comment=Comment.objects.get(id=cid,username=request.user)
+		except ObjectDoesNotExist:
+			comment=None
+			return JsonResponse(0,safe=False)
+		Comment.objects.filter(id=cid,username=request.user).update(text=text)
+		print('here')
+		comment=Comment.objects.get(id=cid,username=request.user)
+		comment.likes=CommentLikes.objects.filter(cid=cid).count()
+		data=render_to_string('uposts/partials/editComment.html',{'comment':comment},request)
+		return JsonResponse(data,safe=False)
+	return fishy(request)
+
 
 
 def get_contifications(request):
