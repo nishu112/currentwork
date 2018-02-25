@@ -214,6 +214,7 @@ class Notification(models.Model):
     ALSO_COMMENTED = 'S'
     SEND_REQUEST = 'SR'
     CONFIRM_REQUEST = 'CR'
+    POSTED_GROUP = 'PG'
     NOTIFICATION_TYPES = (
         (POSTED, 'Posted'),
         (LIKED, 'Liked'),
@@ -222,6 +223,7 @@ class Notification(models.Model):
         (ALSO_COMMENTED, 'Also Commented'),
         (SEND_REQUEST, 'Send Request'),
         (CONFIRM_REQUEST, 'Confirm Request'),
+        (POSTED_GROUP ,'Posted in Group')
         )
 
     _POST_TEMPLATE = '<a href="/users/profile/{0}/">{1}</a> Post an status: <a href="/post/{2}/">{2}</a>'  # noqa: E501
@@ -231,6 +233,7 @@ class Notification(models.Model):
     _ALSO_COMMENTED_TEMPLATE = '<a href="/users/profile/{0}/">{1}</a> also commentend on the post: <a href="/post/{2}/">{2}</a>'  # noqa: E501
     _USER_SEND_REQUEST = '<a href="/users/profile/{0}/">{1}</a> Send a friend request '  # noqa: E501
     _USER_ACCEPTED_REQUEST = '<a href="/users/profile/{0}/">{1}</a> Accepted your friend request '  # noqa: E501
+    _USER_GROUP_POST = '<a href="/users/profile/{0}/">{1}</a>Post an Status in <a href="/groups/{2}/">{3}</a> '  # noqa: E501
 
     from_user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='+')
     to_user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='+',null=True,blank=True)
@@ -238,6 +241,7 @@ class Notification(models.Model):
     sid = models.ForeignKey(Status,on_delete=models.CASCADE, null=True, blank=True)
     notification_type = models.CharField(max_length=2,
                                          choices=NOTIFICATION_TYPES)
+    gid=models.ForeignKey(Groups,on_delete=models.CASCADE,null=True,blank=True)
     is_read = models.BooleanField(default=False)
 
     class Meta:
@@ -267,7 +271,6 @@ class Notification(models.Model):
                 escape(profile),
                 escape(self.from_user.profile.fname),
                 self.sid.slug)
-
         elif self.notification_type == self.ALSO_COMMENTED:
             return self._ALSO_COMMENTED_TEMPLATE.format(
                 escape(profile),
@@ -281,6 +284,10 @@ class Notification(models.Model):
             return self._USER_ACCEPTED_REQUEST.format(
                 escape(profile),
                 escape(self.from_user.profile.fname))
-
+        elif self.notification_type == self.POSTED_GROUP:
+            return self._USER_GROUP_POST.format(
+                escape(profile),
+                escape(self.from_user.profile.fname),
+                self.gid.id,escape(self.gid.gname))
         else:
             return 'Ooops! Something went wrong.'

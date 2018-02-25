@@ -25,9 +25,7 @@ urlpatterns = [
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/photos$', login_required(views.UserPhotos), name='UserPhotos'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChaneProfileInfo$', login_required(views.UserProfileEdit), name='UserProfileEdit'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChangePassword$', login_required(views.UserChangePassword), name='UserChangePassword'),
-    url(r'^ajax/users/profile/friend_list/$', login_required(views.Timeline_friend_list), name='timeline_friend_list'),
-    url(r'^ajax/users/profile/photoframe/$', login_required(views.Timeline_photo_frame), name='timeline_photoframe'),
-    url(r'^ajax/users/profile/status/$', login_required(views.Timeline_posts), name='timeline_status'),
+    
     path('ajax/AddFriend/', views.AddFriend, name='add_friend'),
     path('query/', views.query, name='query'),
     url(r'^ajax/validate_username/$', views.validate_username, name='validate_username'),

@@ -226,12 +226,14 @@ def GetUserPosts(request):
 	friendsPostWithoutGroup=Status.objects.filter(username__in=chatusers,gid__isnull=True).exclude(privacy='Me').select_related('username').order_by('-time')##friends Posts
 	tempfriendsPostWithGroupPrivacyOpen=Status.objects.filter(username__in=chatusers,gid__isnull=False).exclude(privacy='CL').select_related('username').order_by('-time')
 	friendsPostWithGroupPrivacyOpen=Status.objects.none()
+	UserPartOfGroup=ConsistOf.objects.filter(username=request.user).values('gid')
+	PostOfUserPartOfGroup=Status.objects.filter(gid__in=UserPartOfGroup)
 	for x in tempfriendsPostWithGroupPrivacyOpen:
 		if x.gid.privacy=='OP':
 			friendsPostWithGroupPrivacyOpen=friendsPostWithGroupPrivacyOpen|Status.objects.filter(id=x.id)
 	myPosts=Status.objects.filter(username=request.user).select_related('username').order_by('-time')
 	friendsOfFriendsPosts=Status.objects.filter(username__in=friends_suggestion,gid__isnull=True).exclude(privacy='Me').exclude(privacy='fs').select_related('username').order_by('-time')
-	posts=friendsPostWithoutGroup|friendsPostWithGroupPrivacyOpen|myPosts|friendsOfFriendsPosts
+	posts=friendsPostWithoutGroup|friendsPostWithGroupPrivacyOpen|myPosts|friendsOfFriendsPosts|PostOfUserPartOfGroup
 	return posts
 
 
@@ -327,6 +329,7 @@ def grouphome(request,pk):
 			post.gid=group
 
 			post=form.save()
+			Notification.objects.create(from_user=request.user,gid=group,notification_type='PG')
 		return HttpResponseRedirect(request.path_info)
 		print('byee')
 
@@ -679,6 +682,7 @@ def UploadGroupCover(request):
 			cover.gid=group
 			##correct this behavior right now only changing cover for a specific group
 			cover.save()
+			Notification.objects.create(from_user=request.user,gid=group,notification_type='PG')
 			sid=Status.objects.get(id=cover.id)
 			Groups.objects.filter(id=gid).update(cover=sid)
 			gid=Groups.objects.get(id=gid)
@@ -724,8 +728,6 @@ def AddMembers(request):
 		print(request.POST)
 		user=request.POST['search_user']
 		gid=request.POST['group_id']
-		print(user)
-		print(gid)
 		try:
 			user=User.objects.get(username=user)
 		except:
@@ -751,6 +753,7 @@ class UploadProfile(View):
 			ProfileForm.title="Updated Profile"
 			ProfileForm.privacy='fs'
 			ProfileForm.save()
+			Notification.objects.create(from_user=request.user,sid=status.objects.get(id=ProfileForm.id),notification_type='P')
 			Profile.objects.filter(username=self.request.user).update(sid=Status.objects.get(id=ProfileForm.id))
 			obj=Status.objects.get(id=ProfileForm.id)
 			data = {'is_valid': True,'url':obj.image.url}
@@ -857,13 +860,19 @@ def UserProfile(request,slug):
 		privacy='fs'
 	elif profile.username in friends_suggestion:
 		privacy='fsofs'
+	#check all conditions for all privacy
 
 	if privacy=='fsofs':
 		chatusers=Check_user_online(request,profile.username)
 		friends_suggestion=FriendsOfFriends(request,profile.username)
+		loggedInUserFriendsSuggestion=FriendsOfFriends(request,request.user)
 		user=User.objects.filter(username=profile.username)
 		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
+		UserPostWithPrivacyPublic=Status.objects.filter(username=profile.username,privacy='pbc')
+
+
 		posts=Status.objects.filter(username__in=friends_suggestion,gid__isnull=True).exclude(privacy='Me').exclude(privacy='fs').select_related('username').order_by('-time')
+
 	elif privacy=='fs':
 
 		chatusers=Check_user_online(request,profile.username)
@@ -980,59 +989,6 @@ def UserChangePassword(request,slug):
 		return render(request,'user/partial/password.html',{'User':profile,'y':y,'chatusers':chatusers,'form':form})
 
 
-def Timeline_friend_list(request):
-	template_name="user/partial/friends_list.html"
-	print('hello')
-	if request.method == 'GET':
-		currentusersearch=request.GET.get('username')
-		user=User.objects.get(username=currentusersearch)
-		chatusers=Check_user_online(request,user)
-		#Write query for friends list for a particular user
-		friends_list=Profile.objects.filter(username__in=chatusers)
-		for x in friends_list:
-			if str(x.username)==request.user:
-				x.y=-1
-			else:
-				user=request.user
-				fuser=x.username
-				user_obj=User.objects.get(username=user)
-				fuser_obj=User.objects.get(username=fuser)
-				x.y=friendship(user_obj,fuser_obj)
-
-
-
-
-		friends_list = render_to_string(template_name, {'friends_list': friends_list},request)
-	return JsonResponse(friends_list,safe=False)
-
-def Timeline_photo_frame(request):
-	template_name="user/partial/photo_frame.html"
-	if request.method == 'GET':
-		currentusersearch=request.GET.get('username')
-		user=User.objects.get(username=currentusersearch)
-		photo_albums = Status.objects.filter(username=user)
-		photo_albums = render_to_string(template_name, {'photo_albums': photo_albums})
-		return JsonResponse(photo_albums,safe=False)
-
-def Timeline_posts(request):
-	template_name="user/partial/only_post.html"
-	if request.method=='GET':
-		currentusersearch=request.GET.get('username')
-		user=User.objects.get(username=currentusersearch)
-
-		chatusers=Check_user_online(request,user)
-		friends_suggestion=FriendsOfFriends(request,user)
-		user=User.objects.filter(username=user)
-		user.status = 'Online' if hasattr(user, 'logged_in_user') else 'Offline'
-		chatusers=chatusers|user
-		posts=Status.objects.filter(username__in=chatusers).select_related('username').order_by('-time')
-		posts=user_post(request,request.user,posts).select_related('username').order_by('-time')
-
-		status= render_to_string(template_name, {'posts': posts},request)
-		return JsonResponse(status,safe=False)
-
-
-
 def liveSearch(request):
 	if request.is_ajax():
 		fname=request.GET.get('search',None)
@@ -1053,8 +1009,6 @@ def like(request):
 		username = request.user.username
 		id=request.POST['id']
 		type=request.POST['type']
-		print(id)
-		print(type)
 		if type=="post_like":
 			check=StatusLikes.objects.filter(username=User.objects.get(username=username)).filter(sid=Status.objects.get(id=id))
 			likes=Status.objects.get(id=id).likes
@@ -1070,9 +1024,7 @@ def like(request):
 				StatusLikes.objects.filter(username=User.objects.get(username=username),sid=Status.objects.get(id=id)).delete()
 			return HttpResponse(likes)
 		if type=="Comment_like":
-			print('not done')
 			check=CommentLikes.objects.filter(username=User.objects.get(username=username)).filter(cid=Comment.objects.get(id=id))
-			print('1 done')
 			likes=Comment.objects.get(id=id).likes
 			print('calculated')
 			if not check.exists():
@@ -1223,14 +1175,34 @@ def Comments(request):
 def get_contifications(request):
 	if request.is_ajax():
 		#Notification.objects.filter(is_read=False).update(is_read=True)
-		notifications=Notification.objects.filter(is_read=False)[:4]
+		chatusers=Check_user_online(request,request.user)
+		IndividualNotifications=Notification.objects.none()
+		for x in chatusers:
+			IndividualNotifications=IndividualNotifications|Notification.objects.filter(from_user=x,to_user=request.user,is_read=False)
+		print(IndividualNotifications)
+		PostNotification=Notification.objects.none()
+		for x in chatusers:
+			PostNotification=PostNotification|Notification.objects.filter(from_user=x,to_user__isnull=True,is_read=False)
+
+		notifications=(IndividualNotifications|PostNotification)[:4]
+		print(notifications)
 		for notification in notifications:
 			notification.is_read=True
 			notification.save()
 		data=render_to_string('notification/last_notifications.html',{'notifications':notifications},request)
 		return JsonResponse(data,safe=False)
 	else:
-		notifications=Notification.objects.all().select_related('from_user')
+		chatusers=Check_user_online(request,request.user)
+		IndividualNotifications=Notification.objects.none()
+		for x in chatusers:
+			IndividualNotifications=IndividualNotifications|Notification.objects.filter(from_user=x,to_user=request.user)
+		print(IndividualNotifications)
+		PostNotification=Notification.objects.none()
+		for x in chatusers:
+			PostNotification=PostNotification|Notification.objects.filter(from_user=x,to_user__isnull=True)
+
+		notifications=(IndividualNotifications|PostNotification).select_related('from_user')
+		print(notifications)
 		return render(request,"notification/notifications.html",{'notifications':notifications})
 
 	return JsonResponse(1,safe=False)
@@ -1238,5 +1210,15 @@ def get_contifications(request):
 
 def check_contification(request):
 	if request.is_ajax():
-		data=len(Notification.objects.filter(is_read=False))
+		chatusers=Check_user_online(request,request.user)
+		IndividualNotifications=Notification.objects.none()
+		for x in chatusers:
+			IndividualNotifications=IndividualNotifications|Notification.objects.filter(from_user=x,to_user=request.user,is_read=False)
+		print(IndividualNotifications)
+		PostNotification=Notification.objects.none()
+		for x in chatusers:
+			PostNotification=PostNotification|Notification.objects.filter(from_user=x,to_user__isnull=True,is_read=False)
+
+		notifications=(IndividualNotifications|PostNotification)
+		data=len(notifications)
 		return JsonResponse(data,safe=False)

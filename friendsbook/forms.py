@@ -135,7 +135,7 @@ class CreatePost(ModelForm):
 		text = cleaned_data.get('text')
 		image = cleaned_data.get('image')
 		privacy = cleaned_data.get('privacy')
-		if not text and not image and not privacy or not privacy :
+		if not text and not image and not privacy or not privacy or not text and not image:
 			raise forms.ValidationError("Don't submit empty")
 
 
