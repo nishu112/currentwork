@@ -22,9 +22,17 @@
 							{%for x in msg_obj%}
 
 			<li style="width:100%">
-				<div {%if user == x.username %} class="msj-rta macro" {%else%}  class="msj macro"{%endif%}>
+				<div {%if userProfile.username == x.username %} class="msj-rta macro" {%else%}  class="msj macro"{%endif%}>
 					<div class="avatar">
-						<img class="img-circle" style="width:100%;" src="https://lh6.googleusercontent.com/-lr2nyjhhjXw/AAAAAAAAAAI/AAAAAAAARmE/MdtfUmC0M4s/photo.jpg?sz=48"></div>
+						<img class="img-circle"  width="42" height="42"
+						{%if x.username.profile.sid%}
+							{%if x.username.profile.sid.image%}
+								 src={{ x.username.profile.sid.image.url}}
+							{%endif%}
+						{%else%}
+								src="/static/img/profile_pic.png"
+						{%endif%}>
+					</div>
 				<div class="text text-l"><p>
 					{{x.text}}
 				</p><p><small>{{x.time|naturaltime}}</small></p>
@@ -40,10 +48,10 @@
                 <div class="msj-rta macro">
                     <div class="text text-r" style="background:whitesmoke !important">
 
-											<form id="chatform" method="POST" action="" onsubmit="return false">{%csrf_token%}
+											<form id="chatform" method="POST" >{%csrf_token%}
 											<input type="hidden" name="fusername" value="{{fuser_obj}}" required="" id="id_fusername">
 											<div id="chat-bottom" class="input-group">
-												<input type="text" autocomplete="off" name="text" class="mytext" placeholder="Type Messsage" required="" id="id_text">
+												<input type="text" autocomplete="off" name="text" class="form-control" placeholder="Type Messsage" required="" id="id_text">
 												<span class="input-group-btn">
 													<input class="btn btn-default" id="send" type="submit" value="Send"/>
 												</span>
@@ -52,9 +60,7 @@
                     </div>
 
                 </div>
-                <div style="padding:10px;">
-                    <span class="glyphicon glyphicon-share-alt"></span>
-                </div>
+
             </div>
         </div>
 
@@ -70,11 +76,12 @@
 
 {% block javascript%}
 <script>
-$('[data-toggle="tooltip"]').tooltip();
+
 (function( $ ){
 	$('[data-toggle="tooltip"]').tooltip();
 	$('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
 	$("#chatform").on("submit", function() {
+		console.log('submit')
 		form=$(this).closest('form')
 		values=$(form).serialize()
 	fuser=jQuery('input[name="fusername"]').val();
@@ -89,6 +96,8 @@ $('[data-toggle="tooltip"]').tooltip();
 	success: function (data) {
 		console.log(data)
 		$('#msg-list').append(data)
+		console.log('recieved')
+
 		$('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
 		$('#id_text').val('')
 	}
@@ -104,6 +113,8 @@ $('[data-toggle="tooltip"]').tooltip();
 
 </script>
 
+<!--
 <script src="{% static 'js/js/chat.js' %}"></script>
+-->
 
  {%endblock%}

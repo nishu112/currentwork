@@ -1355,7 +1355,7 @@ def Messenger_Chatting(request,slug1,slug2):
 
 	users=Check_user_online(request,request.user)
 	form=ChattingForm(None)
-	return render(request,'chat/messenger.html',{'msg_obj':msg_obj,'chatusers':users,'fuser_obj':fuser_obj,'form':form})
+	return render(request,'chat/messenger.html',{'msg_obj':msg_obj,'chatusers':users,'userProfile':profile1,'fuser_obj':fuser_obj,'form':form})
 
 def Message_received(request):
 	if request.is_ajax() and request.method=='POST':
@@ -1366,9 +1366,11 @@ def Message_received(request):
 		text=request.POST['text']
 		friendship=FriendsWith.objects.filter(Q(username=user_obj,fusername=fuser_obj,confirm_request=2,blocked_status=0) |Q(username=fuser_obj,fusername=user_obj,confirm_request=2,blocked_status=0))
 		if friendship.exists():
-			Message.objects.create(username=request.user,fusername=fuser_obj,text=text)
+			obj=Message.objects.create(username=request.user,fusername=fuser_obj,text=text)
 			print('done')
-			return JsonResponse(10,safe=False)
+			print(obj)
+			content=render_to_string('chat/partials/single_message.html',{'x':obj,'user':request.user},request)
+			return JsonResponse(content,safe=False)
 		print('nope')
 	return JsonResponse(0,safe=False)
 
@@ -1445,7 +1447,7 @@ def Comments(request):
 			jsonobj=render_to_string('uposts/partials/comments.html', {'comments': comments},request)
 			return JsonResponse(jsonobj,safe=False)
 			#below methods are not working? because of some unknown issues
-			return render(request, 'uposts/partials/comments.html',{'comments': comments})
+			#return render(request, 'uposts/partials/comments.html',{'comments': comments})
 	return fishy(request)
 
 def EditComments(request):

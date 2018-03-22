@@ -1,6 +1,10 @@
 $(function () {
-
-
+$(document).on("mouseenter", "div.Allcomments .like", function () {
+	console.log('likes')
+});
+$(document).on("mouseenter", "div.upper_post .like", function () {
+	console.log('posts likes')
+});
 		$(document).on("click", "div.upper_post .like", function () {
 
 		var type=$(this).attr("type");
