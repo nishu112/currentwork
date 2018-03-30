@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 	'django_ajax',
     'widget_tweaks',
     'django.contrib.humanize',
+    'bootstrap3'
 
 ]
 

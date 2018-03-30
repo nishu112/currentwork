@@ -1,9 +1,45 @@
 $(function () {
 $(document).on("mouseenter", "div.Allcomments .like", function () {
 	console.log('likes')
+	id=$(this).closest('.particularcomment').attr('id')
+	title=$(this)
+	console.log(title)
+	$.ajax({
+		url:'/ajax/SeeLikedCommentUsers/',
+		data:{'id':id},
+		cache: false,
+		success: function (data) {
+ 		console.log(data)
+		if(data=="")	{$(title).attr('data-original-title','No Likes');return ;}
+		$('[data-toggle="tooltip"]').tooltip();
+		$(title).attr('data-original-title',data);
+
+		    $('[data-toggle="tooltip"]').tooltip();
+		}
+	});
+
 });
 $(document).on("mouseenter", "div.upper_post .like", function () {
 	console.log('posts likes')
+	var li = $(this).closest("li");
+	var id = $(li).attr("post-id");
+	console.log(id)
+	title=$(this);
+
+
+	$.ajax({
+		url:'/ajax/SeeLikedPostsUsers/',
+		data:{'id':id},
+		cache: false,
+		success: function (data) {
+ 		console.log(data)
+		if(data=="")	return;
+		$('[data-toggle="tooltip"]').tooltip();
+		if(data=="")	{$(title).attr('data-original-title','No Likes');return ;}
+		$(title).attr('data-original-title',data);
+		    $('[data-toggle="tooltip"]').tooltip();
+		}
+	});
 });
 		$(document).on("click", "div.upper_post .like", function () {
 

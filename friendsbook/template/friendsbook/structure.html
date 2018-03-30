@@ -12,9 +12,11 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
 
-<script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+<!--
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+-->
 <script  src="{% static 'js/posts/jquery.bullseye-1.0-min.js' %}"></script>
 	{% block head %}
 
@@ -26,6 +28,7 @@
 
 {%include "friendsbook/header.html"%}
 <main>
+	{%include "friendsbook/emptyModalForPosts.html"%}
 <div class="container-fluid">
 {%include "groups/create_groups.html"%}
 		{% block content %}
@@ -66,11 +69,22 @@ $(document).ready(function(){
     socket.onopen = function open() {
 
       console.log('WebSockets connection created.');
+
+			type='read_messages';
+			user='{{fuser_obj}}'
+			fuser='{{request.user}}'
+			if(user!="" && fuser!=""){
+			var message ={
+				user,type,fuser
+			};
+			socket.send(JSON.stringify(message));
+		}
     };
 
     socket.onmessage = function message(event) {
     var data = JSON.parse(event.data);
 	  var type = data['type'];
+
 	  var user = data['user'];
 	  //did this logic to satisfy condition
 	  //so that message will recieve only if
@@ -95,13 +109,38 @@ $(document).ready(function(){
 	  var fuser = data['fuser'];
 		console.log(user)
 		console.log(selected_user)
+		console.log(type)
+		if(type=="read_messages" && selected_user==user)
+			{
+				console.log('done123')
+			$('.is_read').html('✔✔');
+			type='update'
+			var message ={
+				user,type,fuser
+			};
+			console.log(message)
+			console.log('update in database')
+			socket.send(JSON.stringify(message));
+			return;
+			}
+		if(type=="read_messages" && selected_user!=user)	return;
 			if( selected_user==user)
 		  	{
 				content=data['content'];
 				console.log(content)
+				console.log('content reached')
 				$('#msg-list').append(content)
 
 			  $('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
+				type='read_messages';
+				fuser='{{request.user}}'
+				var message ={
+					user,type,fuser
+				};
+				console.log(message)
+				console.log('sending message acknowledgement')
+				socket.send(JSON.stringify(message));
+
 				}
 			else{
 				Messages=$('.users-list a span').filter(function(){
@@ -109,13 +148,30 @@ $(document).ready(function(){
 				});
 				console.log(Messages)
 				unread=$(Messages).html()
-				$(Messages).html(parseInt(unread)+1);
+				if(unread=="")	$(Messages).html(1);
+				else {
+				$(Messages).html(parseInt(unread)+1);	
+				}
 			}
     };
     if (socket.readyState == WebSocket.OPEN) {
       socket.onopen();
     }
-
+$(document).on("click",".displayPopUp",function(){
+	console.log("really ok")
+	console.log($(this).attr('getFrom'))
+	id=$(this).attr('getFrom')
+	$.ajax({
+		url:"{%url 'getSinglePost' %}",
+		data:{'id':id},
+		success: function (data) {
+				 console.log(data)
+				 $('.postsContent').html(data);
+				 $('#showPostsAfterClickOnImages').modal('show');
+			 }
+	});
+	//getFrom={{status.id}}
+});
 
   </script>
 
