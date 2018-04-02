@@ -11,6 +11,53 @@ from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import ObjectDoesNotExist
 
+class advanceSearchForm(forms.Form):
+	name=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Name'}),label='Name',
+		max_length=30,required=False)
+	InstituteName=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Institute Name'}),label='Institute',
+		max_length=30,required=False)
+	courseName=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Course/Class Name'}),label='Course/Class',
+		max_length=30,required=False)
+	Organisation=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Organisation Name'}),label='Organisation/Working',
+		max_length=30,required=False)
+	profile=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Job Profile'}),label='Job Profile',
+		max_length=30,required=False)
+	location=forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Job Location'}),label='Location',
+		max_length=30,required=False)
+
+	def clean(self):
+		super(advanceSearchForm, self).clean()
+		name=self.cleaned_data.get('name')
+		InstituteName=self.cleaned_data.get('InstituteName')
+		courseName=self.cleaned_data.get('courseName')
+		Organisation=self.cleaned_data.get('Organisation')
+		profile=self.cleaned_data.get('profile')
+		location=self.cleaned_data.get('location')
+		print('inside form clean')
+		print(InstituteName)
+		if name=="" and InstituteName=="" and courseName=="" and Organisation=="" and profile==""  and location=="":
+			print('hey')
+			raise forms.ValidationError("Don't submit empty")
+		if not name and not InstituteName and not courseName and not Organisation and not profile  and not location:
+			raise forms.ValidationError("something went wrong")
+		return self.cleaned_data
+
+
+
+class EducationDetails(ModelForm):
+	CHOICES = [(i,i) for i in range(1950,2019)]
+	date=forms.ChoiceField(widget =forms.Select(),choices=CHOICES, label="Year",initial='2018', required = True)
+	class Meta:
+		model=Education
+		exclude=["username"]
+
+class WorkingFor(ModelForm):
+	CHOICES = [(i,i) for i in range(1950,2019)]
+	WorkingFrom=forms.ChoiceField(widget =forms.Select(),choices=CHOICES, label="Year",initial='2018', required = True)
+	organisation=forms.CharField(required=False)
+	class Meta:
+		model=Working
+		exclude=["username"]
 
 
 class SignUpForm(ModelForm):
@@ -88,7 +135,7 @@ class ProfileForm(ModelForm):
 		if  len(fname)<4:
 			self._errors['fname'] = self.error_class([
 				'Minimum 4 characters required'])
-		if len(lname)<5:
+		if len(lname)<4:
 			self._errors['lname'] = self.error_class([
 				'Minimum 4 characters required'])
 		print(email)

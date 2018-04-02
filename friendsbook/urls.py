@@ -19,12 +19,16 @@ urlpatterns = [
     url(r'^post/create_post/$',login_required(views.create_post),name='new_post'),
     url(r'^post/(?P<slug>[\w+-]+)/$', login_required(views.PostDetailView), name='postdetail'),
 	path('findfriends/', login_required(views.FriendsView.as_view()), name='profiles'),
+	path('findfriends/advanceSearch', login_required(views.advanceSearch), name='advanceSearch'),
+
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/$', login_required(views.UserProfile), name='profile_info'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/timeline$', login_required(views.UserProfile), name='profileTimeline'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/friends$', login_required(views.UserFriendsList), name='profileFriends'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/photos$', login_required(views.UserPhotos), name='UserPhotos'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChaneProfileInfo$', login_required(views.UserProfileEdit), name='UserProfileEdit'),
     url(r'^users/profile/(?P<slug>[\w.@+-]+)/ChangePassword$', login_required(views.UserChangePassword), name='UserChangePassword'),
+    url(r'^users/EducationDetails$', login_required(views.education), name='educationDetails'),
+    url(r'^users/WorkProfile$', login_required(views.workingProfile), name='workDetail'),
 
     path('ajax/AddFriend/', login_required(views.AddFriend), name='add_friend'),
     path('query/', views.query, name='query'),

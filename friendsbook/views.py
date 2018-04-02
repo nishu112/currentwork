@@ -175,6 +175,42 @@ class RegistrationView(View):
 				#create view for this
 		return render(request,self.template_name,{'user_form':user_form,'profile_form':profile_form})
 
+def education(request):
+	if request.method=='POST':
+		details=EducationDetails(request.POST)
+		print('got here')
+		if details.is_valid():
+			education=details.save(commit=False)
+			education.username=request.user
+			education.save()
+			return redirect('workDetail')
+		else:
+			return render(request,"user/educationDetails.html",{'form':form})
+	else:
+		#return redirect('index')
+		print('yes')
+		form=EducationDetails(None)
+		print('nope')
+		return render(request,"user/educationDetails.html",{'form':form})
+
+def workingProfile(request):
+	#return redirect('index')
+	if request.method=='POST':
+		details=WorkingFor(request.POST)
+		print('got here')
+		if details.is_valid():
+			education=details.save(commit=False)
+			education.username=request.user
+			education.save()
+			return redirect('index')
+		else:
+			return render(request,"user/educationDetails.html",{'form':form})
+	else:
+		print('yes')
+		form=WorkingFor(None)
+		print('nope')
+		return render(request,"user/working.html",{'form':form})
+
 class LoginView(View):
 	form_class=LoginForm
 	template_name="user/login.html"
@@ -192,16 +228,15 @@ class LoginView(View):
 		user=authenticate(username=username,password=password)
 		if user is not None:
 			auth_login(request,user)
-			return redirect('index')
-			if not request.user.last_login:
-				print('first time login')
+			epsilon='0:10:60.000000'
+			diff=datetime.datetime.now()-request.user.date_joined
 			print(datetime.datetime.now())
-			print(request.user.last_login)
+			print(request.user.date_joined)
+			print(diff)
+			if str(diff)<epsilon:
+				return redirect('educationDetails')
+			return redirect('index')
 		else:
-			#print(form.errors)
-			#print(form)
-
-
 			return render(request,"user/login.html",{'form':form})
 
 def logout(request):
@@ -361,6 +396,8 @@ def GetUserPostsByAjax(request):
 
 		PuserGroupPostWithOpenPrivacy=Status.objects.filter(username=profile.username,gid__in=PuserGroupsWithOpenPrivacy).order_by('-time')
 		posts=posts|PuserGroupPost|PuserGroupPostWithOpenPrivacy
+		if privacy!='NoNeed':
+			posts=user_post(request,request.user,posts)
 
 
 		#code to load post and using the privacy features
@@ -1110,6 +1147,56 @@ def SearchGroup(request,val):
 	print(val)
 	return Groups.objects.filter(Q(gname__istartswith=val))
 
+
+def combineFriendshipDetailwithUsers(request,users):
+	addfriends_list=list()
+	searched_by=request.user.username
+	for x in users:
+		if str(x.username)==searched_by:
+			addfriends_list.append(-1)
+		else:
+			user=searched_by
+			fuser=x.username
+			user_obj=User.objects.get(username=user)
+			fuser_obj=User.objects.get(username=fuser)
+			addfriends_list.append(friendship(user_obj,fuser_obj))
+	return zip(users,addfriends_list)
+
+def advanceSearch(request):
+	if request.method=='GET':
+		form=advanceSearchForm(request.GET)
+		if form.is_valid():
+			print('got here')
+			name=request.GET.get('name')
+			#InstituteName=request.GET.get('InstituteName')
+			InstituteName=request.GET.get('InstituteName')
+			print(InstituteName,end=' dgdfg')
+			courseName=request.GET.get('courseName')
+			profile=request.GET.get('profile')
+			location=request.GET.get('location')
+			print(name)
+			print(InstituteName)
+			print(courseName)
+			print(profile)
+			print(location)
+			users=Profile.objects.filter(Q(fname__istartswith=name) | Q(lname__istartswith=name)).select_related('username').select_related('sid')
+			usernamesEducation=Education.objects.filter(Q(institute_name__istartswith=InstituteName) & Q(course_class__istartswith=courseName)).values('username')
+			users1=Profile.objects.filter(username__in=usernamesEducation)
+			usernamesWorking=Working.objects.filter(Q(profile__istartswith=profile) &Q(location__istartswith=location) ).values('username')
+			print('before')
+			users2=Profile.objects.filter(username__in=usernamesWorking)
+			username=users1 & users2
+			print('After')
+			users=users & username
+			#users=users & Profile.objects.filter(username__in=username)
+			#users=Profile.objects.all()
+
+			users=combineFriendshipDetailwithUsers(request,users)
+			groups=SearchGroup(request,name)
+
+			return render(request,'user/advance_search_user.html',{'data':users,'sgroups':groups})
+		return render(request,'user/advance_search_user.html')
+
 class FriendsView(generic.ListView):  ###print friendlist of user here
 	template_name='user/search_user.html'
 	context_object_name='data'
@@ -1148,6 +1235,7 @@ class FriendsView(generic.ListView):  ###print friendlist of user here
 		context['newGroupForm']=CreateGroup(None)
 
 		context['groups']=group_list(self.request)
+		context['advanceSearchForm']=advanceSearchForm()
 
 		context=friends_list(self.request,self.request.user.username,context)
 		return context
@@ -1159,6 +1247,8 @@ def UserProfile(request,slug):
 	chatusers=Check_user_online(request,profile.username)
 	friends_suggestion=FriendsOfFriends(request,profile.username)
 	tempuser=User.objects.filter(username=profile.username)
+	workprofile=Working.objects.filter(username=profile.username).order_by('-WorkingFrom')[0:1]
+	educationprofile=Education.objects.filter(username=profile.username).order_by('-date')[0:1]
 	for x in tempuser:
 		x.status = 'Online' if hasattr(tempuser, 'logged_in_user') else 'Offline'
 
@@ -1214,7 +1304,7 @@ def UserProfile(request,slug):
 		#chatusers=Check_user_online(request,profile.username)
 		commonFriends=PusersFriends&LoggedInUserFriends
 		#print('common friends')
-		#print(commonFriends)
+		#print(c`ommonFriends)
 		mutualFriendsPosts=Status.objects.filter(username__in=commonFriends,gid__isnull=True).exclude(privacy='me').order_by('-time')
 		PuserFriendsPosts=Status.objects.filter(username__in=PusersFriends,gid__isnull=True).exclude(privacy='me').exclude(privacy='fs').order_by('-time')
 		LoggedInUserPosts=Status.objects.filter(username=request.user,gid__isnull=True).exclude(privacy='me').order_by('-time')
@@ -1254,7 +1344,13 @@ def UserProfile(request,slug):
 	userPartOfGroups=ConsistOf.objects.filter(username=profile.username,confirm=1)
 	print(userPartOfGroups)
 	print('okkk')
-	return render(request,'user/profile.html',{'User':profile,'page':1,'posts':posts,'y':y,'chatusers':chatusers,'userPartOfGroups':userPartOfGroups})
+	print(educationprofile)
+	print(workprofile)
+	for x in workprofile:
+		print(x.WorkingFrom)
+		print(x.username)
+
+	return render(request,'user/profile.html',{'User':profile,'page':1,'posts':posts,'y':y,'chatusers':chatusers,'userPartOfGroups':userPartOfGroups,'workprofile':workprofile,'educationprofile':educationprofile})
 
 
 def UserFriendsList(request,slug):
