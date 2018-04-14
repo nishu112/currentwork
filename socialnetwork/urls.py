@@ -24,4 +24,6 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
 	url('', include('friendsbook.urls')),
+    url(r'^captcha/', include('captcha.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
