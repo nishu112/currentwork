@@ -53,7 +53,6 @@ INSTALLED_APPS = [
 	'django_ajax',
     'widget_tweaks',
     'django.contrib.humanize',
-    'bootstrap3',
     'captcha',
 
 ]
@@ -110,7 +109,7 @@ DATABASES = {
         'NAME': 'project',
         'USER': 'postgres',
         'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
