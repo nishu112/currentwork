@@ -10,7 +10,6 @@ from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import ObjectDoesNotExist
-from captcha.fields import CaptchaField
 from datetime import date
 
 
@@ -122,7 +121,6 @@ class ProfileForm(ModelForm):
 									'placeholder':'Enter your date of birth'
                                 }),label="Date of Birth",
 								required = True)
-	captcha = CaptchaField()
 	class Meta:
 		model=Profile
 		fields= ["fname","lname","dob","emailid","gender"]

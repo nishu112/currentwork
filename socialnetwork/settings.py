@@ -48,13 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'friendsbook',
+    'friendsbook',
     'channels',
-	'django_ajax',
+    'django_ajax',
     'widget_tweaks',
     'django.contrib.humanize',
-    'captcha',
-
 ]
 
 
@@ -93,7 +91,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            'hosts': [('docker.for.mac.localhost', 6379)],
         },
         'ROUTING': 'socialnetwork.routing.channel_routing',
     }
@@ -106,7 +104,7 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'db',
