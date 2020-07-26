@@ -2,7 +2,7 @@
 
 # How to run
 
-Prerequisite : Docker
+Prerequisite : Docker should be Install 
 
 checkout master branch
 

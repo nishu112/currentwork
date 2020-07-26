@@ -140,8 +140,7 @@ USE_TZ = False  # TimeZone
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    '/Friendsbook/socialnetwork/friendsbook/static/',
-    ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
+    '/Friendsbook/socialnetwork/friendsbook/static/'
 ]
 
 STATIC_URL = '/static/'
