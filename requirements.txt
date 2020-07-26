@@ -19,6 +19,7 @@ djangoajax==2.4
 djangocms-admin-style==1.2.7
 djangocms-attributes-field==0.3.0
 djangocms-video==2.0.4
+
 asgi-redis==1.4.3
 asgiref==1.1.2
 asn1crypto==0.24.0

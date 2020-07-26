@@ -34,10 +34,7 @@ def clean(self):
     Organisation = self.cleaned_data.get('Organisation')
     profile = self.cleaned_data.get('profile')
     location = self.cleaned_data.get('location')
-    print('inside form clean')
-    print(InstituteName)
     if name == "" and InstituteName == "" and courseName == "" and Organisation == "" and profile == "" and location == "":
-        print('hey')
         raise forms.ValidationError("Don't submit empty")
     if not name and not InstituteName and not courseName and not Organisation and not profile and not location:
         raise forms.ValidationError("something went wrong")
@@ -139,14 +136,12 @@ class ProfileForm(ModelForm):
         if not lname.isalpha():
             self._errors['lname'] = self.error_class([
                 'Only alphabets allowed'])
-        print(email)
         if len(fname) < 4:
             self._errors['fname'] = self.error_class([
                 'Minimum 4 characters required'])
         if len(lname) < 4:
             self._errors['lname'] = self.error_class([
                 'Minimum 4 characters required'])
-        print(email)
         return self.cleaned_data
 
 
@@ -196,8 +191,6 @@ class ChangePasswordForm(forms.ModelForm):
         old_password = self.cleaned_data.get('old_password')
         new_password = self.cleaned_data.get('new_password')
         password = self.cleaned_data.get('confirm_password')
-        print(new_password)
-        print(password)
         if len(password) < self.MIN_LENGTH:
             self._errors['new_password'] = self.error_class([
                 'Minimum 8 characters required'])
@@ -254,14 +247,12 @@ class EditProfileForm(ModelForm):
         if not lname.isalpha():
             self._errors['lname'] = self.error_class([
                 'Only alphabets allowed'])
-        # print(email)
         if len(fname) < 4:
             self._errors['fname'] = self.error_class([
                 'Minimum 4 characters required'])
         if len(lname) < 5:
             self._errors['lname'] = self.error_class([
                 'Minimum 4 characters required'])
-        # print(email)
         if not phone:
             self._errors['phone_no'] = self.error_class([
                 'Wrong format of phone number'])

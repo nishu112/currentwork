@@ -74,9 +74,4 @@ $('body > div > div > div:nth-child(2) > span').click(function() {
 
 //-- Clear Chat
 
-
-//-- Print Messages
-
-
-
 //-- NOTE: No use time on insertChat.

@@ -8,7 +8,6 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('signup/', views.RegistrationView.as_view(), name='signup'),
     path('', login_required(views.home), name='index'),
-    # path('secret_place/',views.index,name='index1'),
     # going to comment this post url because post list must come in
     url(r'^post/$', login_required(views.home), name='post'),
     url(r'^post/create_post/$', login_required(views.create_post), name='new_post'),
