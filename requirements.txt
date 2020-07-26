@@ -86,5 +86,4 @@ virtualenv==15.1.0
 virtualenv-clone==0.2.6
 virtualenvwrapper-win==1.2.4
 websocket-client==0.44.0
-whitenoise==3.3.1
 zope.interface==4.1.3

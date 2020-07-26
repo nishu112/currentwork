@@ -1,28 +1,64 @@
 {% extends "user/base.html" %}
 {% block javascript %}
+<script>
+
+</script>
   <script>
-    $("#id_username").change(function () {
+  $(function() {
+
+$('body').on('focus',".datepicker", function(){
+	datepicker=(this).closest('.datepicker')
+$(datepicker).datepicker({
+
+	changeMonth: true,
+	changeYear: true,
+	yearRange: "1970:2018",
+	// You can put more options here.
+
+});
+});
+
+
+
+    $(document).on("change","#id_username",function(){
+console.log('ennter')
+obj=$(this);
 	console.log( $(this).val() );
       var username=$(this).val();
+      if(username.length<5) return;
 
 	    $.ajax({
         url: '{%url "validate_username"%}',
+        cache: false,
         data: {
           'username': username
         },
+
         dataType: 'json',
         success: function (data) {
+
           if (data.is_taken) {
             alert("A user with this username already exists.");
+            obj.val("");
+            $('#id_username').focus()
           }
+
+          console.log(data)
+          console.log('ok')
         }
       });
+
+    });
 
     });
   </script>
 {% endblock %}
 
 {% block content %}
+<style>
+ul li {list-style:none}
+</style>
+
 <form action="" method="POST">{%csrf_token%}
 	<p style="padding-left:20px"> <input placeholder="Username" type="text" name="username" maxlength="150" required id="id_username" /></p>
 <p style="padding-left:20px"> <input placeholder="Password"type="text" name="password" maxlength="128" required id="id_password" /></p>
