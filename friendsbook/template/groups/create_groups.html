@@ -1,0 +1,55 @@
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Create New Group</h4>
+        </div>
+
+		<div class="container-fluid">
+			<div style="margin-bottom: 20px;">
+
+			 <form class="create-new-group"  onsubmit="return false" method='POST' enctype="multipart/form-data" >{%csrf_token%}
+				  {{newGroupForm.as_p}}
+				  <input type="submit" class="btn btn-primary" value="Create"/>
+			</form>
+
+			</div>
+		</div>
+
+      </div>
+
+    </div>
+	</div>
+<script>
+
+$(document).on("click", ".create-new-group input[type='submit'] ", function () {
+        console.log("form submitted!")
+
+        console.log("create group is working!")
+		form=$(this).closest('form');
+
+		$('#create-new-group').trigger("reset");
+
+        $.ajax({
+            url : "ajax/CreateGroup/",
+            data : $(form).serialize() ,
+            type:'POST',
+			      dataType: 'json',
+            success : function(json) {
+			console.log(json)
+			console.log(json['gname'])
+			$("#Groups").prepend(
+			'<li><a data-group="{{ group|escape }}" href="javascript:void(0)"><div class="group_detail">	<div class="detail">' + json['gname']+'</div>	</div>	</a> </li>')
+                console.log(json);
+            },
+			error : function(xhr,errmsg,err) {
+                alert("unable to create new Group")
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    });
+</script>

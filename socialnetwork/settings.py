@@ -14,6 +14,14 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SETTINGS_DIR = os.path.dirname(__file__)
+
+
+PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
+PROJECT_PATH = os.path.abspath(PROJECT_PATH)
+
+
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,6 +51,9 @@ INSTALLED_APPS = [
 	'friendsbook',
     'channels',
 	'django_ajax',
+    'widget_tweaks',
+    'django.contrib.humanize',
+
 ]
 
 
@@ -142,6 +153,7 @@ USE_TZ = False #TimeZone
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/Friendsbook/socialnetwork/friendsbook/static/',
+	 ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
 ]
 
 STATIC_URL = '/static/'

@@ -1,5 +1,8 @@
+<ul style="list-style-type:none" class="mainposts">
+	{% for status in posts%}
 
-	{% for status,comments,numberOfComments in status_object%}
 		{%include "uposts/posts.html" %}
-		
-	{%endfor%}	
+		{%empty%}
+		<h2>No posts to show</h2>
+	{%endfor%}
+<ul>

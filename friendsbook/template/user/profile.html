@@ -1,49 +1,203 @@
 {% extends "friendsbook/structure.html" %}
+
+{% load static %}
+{%block head%}
+	<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
+	<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
+	<link href="{% static 'css/pages/cover.css' %}" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+{%endblock head%}
 {% block content %}
-
-<div class="container"><br><br><br>
-	<div class="row">
-		<div class="col-sm-8">
-			<div class="row ">
+<div class="container-fluid"><br><br><br>
+	<div class="row ">
+		<div class="col-sm-9">
+			<div class="row profile " profilefor="{{User.username}}">
 				<div class="background_pic_design">
-					<div class="cover_background">
-			<button class="button1">Timeline</button>
-			<button class="button2">About</button>
-			<button class="button3">Friends</button>
-			<button class="button4">Photos</button>
-				<button class="button5">More</button>
+					{%if User.profileCover.image%}
+						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("{{User.profileCover.image.url}}");'>
+					{%else%}
+						<div class="cover_background" id="cover_background" title="Cover" style='background-image: url("/static/img/cover.jpg");"'>
+					{%endif%}
+					<span class="btn btn-default button1"><a href="timeline">Timeline</a></span>
+					<span class="btn btn-default button2"><a href="">About</a></span>
+					<span class="btn btn-default button3"><a href="friends">Friends</a></span>
+					<span class="btn btn-default button4"><a href="photos">Photos</a></span>
+					{%ifequal User.username.username user.username%}
+					<div class="dropdown button5">
+						<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">More
+						<span class="caret"></span></button>
+						<ul class="dropdown-menu">
+							<li><a href="ChaneProfileInfo">Setting</a></li>
 
-					<button class="button6">upload cover</button>
-					<p class="name">{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}</p>
-						<div class="pic">
+						</ul>
+					</div>
+					{%endifequal%}
+					{% ifequal User.username.username user.username  %}
+					<div class="btn button6" style="margin-bottom: 20px;">
+						<button type="button" class="btn btn-primary js-upload-photos" id="mycover">
+
+						  <span class="glyphicon glyphicon-cloud-upload"></span> Upload Cover
+
+						</button>
+						<input id="fileupload1" type="file" name="image"
+							   style="display: none;"
+							   data-url="{%url 'UpdateCover'%}"
+							   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'/>
+					</div>
+					{%endifequal%}
+					<div  class="name">
+						<div class="row">
+							<div class="col-sm-6">
+								{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}
+							</div>
+							{% ifnotequal User.username.username user.username  %}
+							<div class="particularuser" user={{User.username}} csrf={{csrf_token}}>
+								<div class="col-sm-6 add_friendbutton" >
+ 	 								{%if y is 0 or y is 1 or y is 2%}
+ 	 										<button class="btn btn-default type1" actiontype="type1" type="button" performaction="{%if y is 0%}Send{%elif y is 1%}Cancel{%elif y is 2%}Confirm{%endif%}" onclick="return false"  >
+ 	 										{%if y is 0%} Send request {%elif y is 1%} Cancel request{%elif y is 2%}Confirm Request{%endif%}
+ 	 										</button>
+ 	 								{%endif%}
+ 	 								{%if y is 2 or y is 3%}
+ 	 								<button class="btn btn-default type2" actiontype="type2" performaction="{%if y is 2%}Delete{%elif y is 3 %}Unfriend{%endif%}" type="button">
+ 	 									{%if y is 2%}Delete Request{%elif y is 3 %}Unfriend{%endif%}
+ 	 								</button>
+ 	 								{%endif%}
+							</div>
+						</div>
+						{%endifnotequal%}
+					</div>
+
+					</div>
+						<div class="pic" >
 						{%if User.sid%}
 									{%if User.sid.image%}
-										<img class="img-rounded" src="{{ User.sid.image.url}}" alt="My image" width="200" height="200"/>
+										<img class="img-rounded" id="my_profile_pic"  src="{{ User.sid.image.url}}" alt="My image" width="200" height="200"/>
 									{%endif%}
 						{%else%}
-							<img class="img-rounded" src="/static/img/profile_pic.png" alt="My image" width="200" height="200"/>
+							<img class="img-rounded" id="my_profile_pic" src="/static/img/profile_pic.png" alt="My image" width="200" height="200"/>
 						{%endif%}
+						{% ifequal User.username.username user.username  %}
+						<div class="button7" >
+						<button type="button" class="btn btn-primary js-upload-photos" id="mypic" style="display:none">
+						  <span class="glyphicon glyphicon-cloud-upload"></span> Upload Profile Picture
+						</button>
+
+
+						<input id="fileupload2" type="file" name="image"
+							   style="display: none;"
+							   data-url="{%url 'UpdateProfile'%}"
+							   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'/>
+						</div>
+						{%endifequal%}
 
 						</div>
 					</div>
 				</div>
-
-
-
-			<div class="row"><br><br><br><br>
-					<div class="col-sm-5"></div>
-					<div class="col-sm-7">
-					{%include "uposts/only_post.html" %}<br>
-					</div>
-
-
-				</div>
 			</div>
+
+
+			<!---
+			-->
+			{%block profile_content%}
+			<br><br><br>
+			
+			<div id="profileonclickbuttons" style="display:block";class="row">
+							<div class="col-sm-3">
+								<div class ="intro" >
+									<h4><img src="/static/img/introicon.png" width="25px" height="25px"><strong>&nbsp&nbspIntro </strong></h4>
+									<p><img src="/static/img/read.jpg" width="20px" height="20px" >&nbsp&nbspStudying at </p>
+									{%if User.state%}
+									<p><img src="/static/img/images.png" width="20px" height="20px">&nbsp&nbspLives in {{User.state}}</p>
+									{%endif%}
+									{%if User.country%}
+									<p><img src="/static/img/color-icons-green-home.png" width="20px" height="20px">&nbsp&nbspFrom {{User.country}}</p>
+									{%endif%}
+									{%if User.dob%}
+									<p><img src="/static/img/born.png" width="20px" height="20px">&nbsp&nbsp Born in {{User.dob}}</p>
+									{%endif%}
+								</div>
+							</div>
+							<div class="col-sm-9">
+
+									<div class="row">
+										<div class="col-sm-12">
+											{%include "uposts/only_post.html" %}<br>
+										</div>
+									</div>
+							</div>
+						</div>
+
+
+
+
+		<!---
+		-->
+			{%endblock profile_content%}
+
+			<div class="row">
+
+			</div>
+
 		</div>
-		<div class="col-sm-2"></div>
+		<div class="col-sm-1">
+		</div>
 		<div class="col-sm-2">
 			{%include "chat/online_user_list.html"%}
 		</div>
 	</div>
+
 </div>
+
+
+
+<script>
+  $(function() {
+
+$('body').on('focus',".datepicker", function(){
+	datepicker=(this).closest('.datepicker')
+$(datepicker).datepicker({
+
+	changeMonth: true,
+	changeYear: true,
+	yearRange: "1970:2018",
+	// You can put more options here.
+
+});
+});
+
+});
+$(function () {
+
+
+
+
+
+
+
+{% ifequal User.username.username user.username  %}
+	$('.pic').on("mouseenter",function(){
+		$('#mypic').show()
+	});
+
+	$('.pic').on("mouseleave",function(){
+		$('#mypic').hide()
+	});
+{%endifequal%}
+
+
+});
+
+</script>
+{% endblock %}
+
+
+{%block javascript%}
+<script src="{% static 'js/posts/posts.js' %}"></script>
+<script src="{% static 'js/addfriends/friendrequest.js' %}"></script>
+
+
+
+
 {% endblock %}

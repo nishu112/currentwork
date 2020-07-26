@@ -7,6 +7,28 @@ color: white;
 float: right;
 }
 
+a{
+	text-decoration: none !important;
+}
+
+.group_input_fields{
+	display: block;
+    width: 50%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
 .mynavbar {
   overflow: hidden;
   background-color: #333;
@@ -33,14 +55,27 @@ float: right;
 
 
 #sidebar ul{ overflow-y:auto;
-			height:75vh;
+
 			margin-bottom:4px;
 }
-#msg-list { overflow-y:auto;
-		margin-top:10px;
-		height:75vh;
-		margin-bottom:4px;}
-#chatform {margin-bottom:4px;}
+
+
+
+
+.navbar li a, .navbar .navbar-brand {
+
+        color: #fff !important;
+    	font-size: 18px;
+}
+.navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #f4511e !important;
+    background-color: #ECEFF1 !important;
+}
+.navbar-default .navbar-toggle {
+    border-color: transparent;
+    color:#000000!important;
+}
+
 
 .status_image {
     padding-top: 5px;
@@ -85,9 +120,6 @@ margin-right: 10px;
 	display:inline-block;
 }
 
-.profile{
-	display: inline-block;
-}
 
 .profile_name{
 	overflow: hidden;
@@ -123,29 +155,12 @@ div.myautoscroll:hover {
 	display: inline-block;
 }
 
-.navbar li a, .navbar .navbar-brand {
-
-    color: #fff !important;
-	font-size: 18px;
-}
-
-.nav li a:link, .nav li a:visited {
-
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.navbar li a:hover, .navbar li a:active {
-    background-color: red;
-}
-
 .glyphicon.glyphicon-globe {
     font-size: 20px;
 }
 
 .cover_background {
-    background-image: url("/static/img/cover.jpg");
+
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -219,48 +234,25 @@ div.myautoscroll:hover {
 		border-bottom: 1px solid #d4cece;
 }
 
-.button1{
-	font-size:15px;
-	top:270px;
-	right:30px;
+
+
+ .friends_list_pic{
+	     float: left;
+    margin-top: -9px;
+ }
+ .friends_list_addFriends{
+	     float: right;
+    margin-top: -21px;
+ }
+
+.intro{
+	background-color:white;
+	width:80%;
+	height:250px;
 	position:absolute;
-	margin-right:456px;
-
+	padding-left: 5%;
 }
-.button2{
-	font-size:15px;
-	top:270px;
-	right:30px;
-	position:absolute;
-	margin-right:400px;
-}
-.button3{
-	font-size:15px;
-	top:270px;
-	right:30px;
-	position:absolute;
-	margin-right:333px;
-}
-.button4{
-	font-size:15px;
-	top:270px;
-	right:30px;
-	position:absolute;
-	margin-right:270px;
-}
-.button5{
 
-	font-size:15px;
-	top:270px;
-	right:30px;
-	position:absolute;
-	margin-right:219px;
-
-
-
-
-
-}
 .name{
 
 left:240px;
@@ -269,20 +261,12 @@ font-family:verdana;
 color:black;
 top:230px;
 height:50px;
-width:200px;
+width: 500px;
 position:absolute;
 }
 
 
 
-.button6 {
-	font-size:15px;
-	top:10px;
-	right:0px;
-	margin-right:10px;
-	position:absolute;
-
-}
 
 
 
@@ -290,8 +274,24 @@ position:absolute;
 	top:255px;
 	right:-210px;
 	margin-right:460px;
+}
 
+ul.djng-form-errors {
+        margin-left: 0;
+        display: inline-block;
+        list-style-type: none;
+}
+ul.djng-form-errors li.invalid {
+        color: #e9322d;
+}
+ul.djng-form-errors li.invalid:before {
+        content: "\2716\20";  /* adds a red cross before the error message */
+}
+ul.djng-form-errors li.valid:before {
+        color: #00c900;
+        content: "\2714";  /* adds a green tick */
+}
 
-
-
+label.djng-field-required::after {
+    content: "\00a0*";
 }
