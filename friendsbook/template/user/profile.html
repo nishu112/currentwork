@@ -5,33 +5,37 @@
 	<div class="row">
 		<div class="col-sm-8">
 			<div class="row ">
-			{%if User.profileCover.image%}
-				<div style='max-width=100%;max-height=100%;background-repeat: no-repeat;background-image: url("{{User.profileCover.image.url}}");' class="background_pic_design">
-			{%else%}
-				<div style='background-image: url("/static/img/cover.jpg");' class="background_pic_design">
-			{%endif%}
+				<div class="background_pic_design">
 					<div class="cover_background">
+			<button class="button1">Timeline</button>
+			<button class="button2">About</button>
+			<button class="button3">Friends</button>
+			<button class="button4">Photos</button>
+				<button class="button5">More</button>
+
+					<button class="button6">upload cover</button>
+					<p class="name">{{User.username.profile.fname}} {%if User.username.profile.lname%}{{User.username.profile.lname}}{%endif%}</p>
 						<div class="pic">
 						{%if User.sid%}
 									{%if User.sid.image%}
 										<img class="img-rounded" src="{{ User.sid.image.url}}" alt="My image" width="200" height="200"/>
 									{%endif%}
 						{%else%}
-						
 							<img class="img-rounded" src="/static/img/profile_pic.png" alt="My image" width="200" height="200"/>
 						{%endif%}
-							
+
 						</div>
-					<span></span>
 					</div>
-					
 				</div>
-			<div class="row"><br><br><br><br>	
+
+
+
+			<div class="row"><br><br><br><br>
 					<div class="col-sm-5"></div>
 					<div class="col-sm-7">
-					{%include "uposts/only_post.html" %}<br>	
-					</div> 
-					 
+					{%include "uposts/only_post.html" %}<br>
+					</div>
+
 
 				</div>
 			</div>

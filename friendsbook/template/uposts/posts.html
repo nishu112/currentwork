@@ -8,7 +8,7 @@
 			  </button>
 			  <div class="dropdown-content" style="min-width: 60px;">
 				<a href="javascript:void(0)" >Edit</a>
-				<a href="javascript:void(0)" onclick="change_post_comment(this)" >Delete</a>		
+				<a href="javascript:void(0)" onclick="change_post_comment(this)" >Delete</a>
 			  </div>
 			</div>
 		</div>
@@ -31,7 +31,7 @@
 			{% if ".jpg" in status.image.url or ".jpeg" in status.image.url or ".tif" in status.image.url or   ".png" in status.image.url or ".gif" in status.image.url %}
 				<a href="{% url 'post' status.slug %}"><img class="img-rounded"  src="{{ status.image.url}}" alt="My image" width="100%"/></a>
 			{% else %}
-				<video  controls class="video-js vjs-default-skin vjs-big-play-centered" width="100%" 
+				<video  controls class="video-js vjs-default-skin vjs-big-play-centered" width="100%"
 				height="360" >
 				<source src="{{ status.image.url}}" type="video/mp4"></video>
 			{% endif %}
@@ -40,11 +40,11 @@
 			<button class="glyphicon glyphicon-thumbs-up" id="post_like" style="margin-top:10px" type="button" onclick="like(this)" ></button>
 			<button style="margin-left:15px" type="button" onclick="showcomment(this)">Comment</button>
 			<span id="numberOfComments{{status.id}}">{%if numberOfComments%} {{numberOfComments}}{%endif%}</span>
-			
+
 			<button style="margin-left:15px" type="button" onclick="">Share</button><br>
 		</div>
 			<p style="margin-top:10px" id='like-{{status.id}}'>{%if status.likes %}{{status.likes}}{%endif%} </p>
-	
+
 	</div>
 	<div class="comment_class" id="comment_class{{status.id}}" style="display:none" >
 		<div id="comments" class="input-group">
@@ -54,7 +54,7 @@
 			</span>
 		</div>
 		<div id="Allcomments{{status.id}}" class="Allcomments">
-			{%for comment in comments%}					
+			{%for comment in comments%}
 				<div class="row" id="{{comment.slug}}">
 				<hr>
 					<div class="col-sm-2" >
@@ -71,26 +71,26 @@
 							  </button>
 							  <div class="dropdown-content" style="min-width: 60px;">
 								<a href="javascript:void(0)" >Edit</a>
-								<a href="javascript:void(0)" onclick="change_post_comment(this)" >Delete</a>		
+								<a href="javascript:void(0)" onclick="change_post_comment(this)" >Delete</a>
 							  </div>
 							</div>
 						</div>
 						{%endif%}
 						</div>
 						<div class="row">
-						<span >				
+						<span >
 						<p id="comment-{{comment.slug}}">{%if comment.likes%}{{comment.likes}}{%endif%}</p>
 							<a class="" href="javascript:void(0)" role="button" id="comment_like" onclick="like(this)" tabindex="0">Like</a>
-							&nbsp;				
-							<a class="" href="javascript:void(0)" role="button">Reply</a>				
+							&nbsp;
+							<a class="" href="javascript:void(0)" role="button">Reply</a>
 						</span>
 						</div>
 					</div>
 					<div class="col-sm-2">
-						
+
 					</div>
-				</div>	
-				
+				</div>
+
 			{% endfor %}
 		</div>
 	</div>

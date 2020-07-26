@@ -7,30 +7,21 @@
 			</div>
 			<div class="col-sm-1"></div>
 			<div class="col-sm-5">
-			
-			{%include "uposts/only_post.html" %}<br>	
-			</div> 
+			{%include "uposts/only_post.html" %}<br>
+			</div>
 			<div class="col-sm-2">
-			</div> 
+			</div>
 			<div class="col-sm-2">
 			{%include "chat/online_user_list.html"%}
-			</div> 
+			</div>
 	</div>
-	
-  
+
+
 {%endblock%}
 
 {%block javascript%}
 <script>
-// Get the modal
-var modal = document.getElementById('id01');
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
 </script>
 
 {% endblock %}
