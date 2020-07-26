@@ -25,7 +25,9 @@ SECRET_KEY = 'xk6s6q(tq(!@li$4_0yu^!k6+d*v&gm0l&yq6^m7+#qv(j)he1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+LOGIN_REDIRECT_URL = '/'
 
 LOGIN_URL = 'login'
 
@@ -79,7 +81,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            'hosts': [('docker.for.mac.localhost', 6379)],
         },
         'ROUTING': 'socialnetwork.routing.channel_routing',
     }
@@ -92,10 +94,10 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
