@@ -2,41 +2,41 @@
 {% block content %}
 {% load static %}
 {%block head%}
-	<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
-	<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
-	<link href="{% static 'css/pages/cover.css' %}" rel="stylesheet">
-	<link href="{% static 'css/pages/group/navigation.css' %}" rel="stylesheet">
-	<style>
-	.maincontainer ul{
-		margin-left:-40px;
+<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
+<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
+<link href="{% static 'css/pages/cover.css' %}" rel="stylesheet">
+<link href="{% static 'css/pages/group/navigation.css' %}" rel="stylesheet">
+<style>
+	.maincontainer ul {
+		margin-left: -40px;
 	}
-	</style>
+</style>
 {%endblock head%}
 <div class="container-fluid">
 
 	<div class="modal fade" id="addMembersToGroup" role="dialog">
-	    <div class="modal-dialog">
+		<div class="modal-dialog">
 
-	      <!-- Modal content-->
-	      <div class="modal-content">
-	        <div class="modal-header">
-	          <button type="button" class="close" data-dismiss="modal">&times;</button>
-	          <h4 class="modal-title">Add members</h4>
-	        </div>
-			<div class="container-fluid">
-				<div class="membersearch">
-					<form action="" method="post" onsubmit="return false">{%csrf_token %}
-						<input type="text" autocomplete="off" id="searchToAddMembers" size="75" placeholder="Search" name="search_user">
-						<input type="hidden" name="group_id" value="{{group.id}}"/>
-						<hr>
-						<input class="btn btn-primary pull-right" style="margin:4px" type="submit" value="Add"/>
-					</form>
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add members</h4>
+				</div>
+				<div class="container-fluid">
+					<div class="membersearch">
+						<form action="" method="post" onsubmit="return false">{%csrf_token %}
+							<input type="text" autocomplete="off" id="searchToAddMembers" size="75" placeholder="Search" name="search_user">
+							<input type="hidden" name="group_id" value="{{group.id}}" />
+							<hr>
+							<input class="btn btn-primary pull-right" style="margin:4px" type="submit" value="Add" />
+						</form>
+					</div>
 				</div>
 			</div>
-		  </div>
 
-	     </div>
 		</div>
+	</div>
 
 
 	<div class="row">
@@ -46,7 +46,7 @@
 
 				{%include "groups/group_navigation.html"  with active='discussion'%}
 
-			  <div class="col-sm-10">
+				<div class="col-sm-10">
 					<div class="row">
 
 
@@ -55,15 +55,15 @@
 
 
 
-					</br>
+						</br>
 						<div class="row" style="margin-top:10px;">
 
 							<div class="col-sm-8 maincontainer">
 								<h2>Posts</h2>
 								{%if group.new is 0 %}
 								<br>
-								<button type="button" class="btn btn-default btn-sm  pull-right btn-compose" >
-										<span class="glyphicon glyphicon-share-alt"></span> Create Post
+								<button type="button" class="btn btn-default btn-sm  pull-right btn-compose">
+									<span class="glyphicon glyphicon-share-alt"></span> Create Post
 								</button>
 								<br><br>
 								&nbsp;
@@ -73,18 +73,18 @@
 
 									<form action="" method="post" enctype='multipart/form-data'>{%csrf_token %}
 										<div class="form-group">
-										  <label for="id_text">Text:</label>
-										  <textarea class="form-control" rows="5" name="text"  id="id_text" style="margin: 0px 161.578px 0px 0px; width: 382px; height: 123px;"></textarea>
+											<label for="id_text">Text:</label>
+											<textarea class="form-control" rows="5" name="text" id="id_text" style="margin: 0px 161.578px 0px 0px; width: 382px; height: 123px;"></textarea>
 										</div>
 
-									<div class="post">
-										<div class="status_image">
-											<input type="file" name="image" id="id_image">
+										<div class="post">
+											<div class="status_image">
+												<input type="file" name="image" id="id_image">
+											</div>
+											<div class="post_status">
+												<input type="submit" value="Post" />
+											</div>
 										</div>
-										<div class="post_status">
-											<input  type="submit" value="Post"/>
-										</div>
-									</div>
 									</form>
 								</div>
 								{%endif%}
@@ -99,13 +99,13 @@
 							</div>
 						</div>
 
-			  </div>
+					</div>
 
+				</div>
+
+
+			</div>
 		</div>
-
-
-		</div>
-	</div>
 		<div class="col-sm-2">
 
 			{%include "chat/online_user_list.html"%}
@@ -117,28 +117,26 @@
 
 </div>
 <script>
-$(document).on("click", ".membersearch input[type='submit']", function (event){
-	form=$(this).closest('form')
-	addMembersToGroup=$(this).closest('#addMembersToGroup')
-	close=$('.close',addMembersToGroup)
-	$($(this).closest('.close')).click();
-	$.ajax({
-		url: "{%url 'addgroupmember' %}",
-		data:$(form).serialize(),
-		type:'POST',
-		dataType: 'json',
-		success: function (data) {
-			console.log('back');
-			console.log(data)
-			if(data=="0")	alert('Unable to add member');
+	$(document).on("click", ".membersearch input[type='submit']", function(event) {
+		form = $(this).closest('form')
+		addMembersToGroup = $(this).closest('#addMembersToGroup')
+		close = $('.close', addMembersToGroup)
+		$($(this).closest('.close')).click();
+		$.ajax({
+			url: "{%url 'addgroupmember' %}",
+			data: $(form).serialize(),
+			type: 'POST',
+			dataType: 'json',
+			success: function(data) {
+				console.log('back');
+				console.log(data)
+				if (data == "0") alert('Unable to add member');
 
-			$(close).click();
-		}
+				$(close).click();
+			}
+		});
+
 	});
-
-});
-
-
 </script>
 {% endblock %}
 
@@ -147,40 +145,35 @@ $(document).on("click", ".membersearch input[type='submit']", function (event){
 
 <script src="{% static 'js/posts/posts.js' %}"></script>
 <script>
+	$(function() {
+		console.log("Nope")
+		$(document).on("click", ".maincontainer .btn-compose", function() {
+
+			//update and correct this
+			if ($(".grouppostform").hasClass("composing")) {
+				$(".grouppostform").removeClass("composing");
+				$(".grouppostform").slideUp();
+			} else {
+				$(".grouppostform").addClass("composing");
+				$(".grouppostform textarea").val("");
+				$(".grouppostform").slideDown(400, function() {
+					$(".grouppostform textarea").focus();
+				});
+			}
+
+			console.log('done')
+		});
+
+		function getmembers(id) {
+			console.log("members");
+
+		}
 
 
 
-$(function () {
-	console.log("Nope")
-	$(document).on("click", ".maincontainer .btn-compose", function () {
 
-		//update and correct this
-		if ($(".grouppostform").hasClass("composing")) {
-      $(".grouppostform").removeClass("composing");
-      $(".grouppostform").slideUp();
-    }
-    else {
-      $(".grouppostform").addClass("composing");
-      $(".grouppostform textarea").val("");
-      $(".grouppostform").slideDown(400, function () {
-        $(".grouppostform textarea").focus();
-      });
-    }
 
-		console.log('done')
 	});
-
-	function getmembers(id){
-	console.log("members");
-
-	}
-
-
-
-
-
-});
-
 </script>
 
 {% endblock %}

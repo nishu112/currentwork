@@ -1,87 +1,86 @@
 {% load humanize %}
- <li class='container-fluid post_style_box' style="list-style-type: none;"  post-id={{status.id}} csrf="{{ csrf_token }}">
-   <div class="Status">
-    	<div class="upper_post">
-        {% ifequal status.username.username user.username  %}
-        <div class="edit_delete" id="status">
-    			<div class="dropdown">
-    			  <button type="submit" class="edit_button_icon" >
-    				<span class="glyphicon glyphicon-chevron-down"></span>
-    			  </button>
-        			  <div class="dropdown-content" style="min-width: 60px;">
-        				<a href="javascript:void(0)" >Edit</a>
-        				<a href="javascript:void(0)" class="delete_status" >Delete</a>
-        			  </div>
-    			</div>
-    		</div>
-        {% endifequal %}
-    		{%if status.username.profile.sid%}
-    			{%if status.username.profile.sid.image%}
-    				<img class="img-rounded "  src="{{ status.username.profile.sid.image.url}}" alt="My image" width="42" height="42"/>
-    			{%endif%}
-    		{%else%}
-    				<img class="img-rounded"  src="/static/img/profile_pic.png" alt="My image" width="42" height="42"/>
-    		{%endif%}
-
-
-
-    		 <a  href="{% url 'profile_info' status.username.profile %}">{{status.username.profile.fname}}</a>  {{status.title}}
-			 {%if status.gid%}
-				<a href="{%url 'GroupsHomepage' status.gid.id%}" >{{status.gid.gname}}</a>
-			 {%endif%}
-    		 <br>
-    		 {{status.time|naturaltime}}<br>
-    		 {% if status.text %}
-
-    			<br>{{status.text}}<br>
-    		 {% endif %}
-    		 {% if status.image  %}<br>
-    			{% if ".jpg" in status.image.url or ".jpeg" in status.image.url or ".tif" in status.image.url or   ".png" in status.image.url or ".gif" in status.image.url %}
-          <a href="#"  data-toggle="modal" data-target="#status-{{status.id}}" >
-            <img class="img-rounded displayPopUp" getFrom={{status.id}} src="{{ status.image.url}}" alt="My image" width="100%"/></a>
-
-    			{% else %}
-    				<video  controls class="video-js vjs-default-skin vjs-big-play-centered displayPopUp" width="100%" getFrom={{status.id}}
-    				height="360" >
-    				<source src="{{ status.image.url}}" type="video/mp4"></video>
-    			{% endif %}
-    		 {% endif %}
-    		 <div class="post_button">
-
-
-           {% if status.is_like %}
-             <a href="#" style="text-decoration: none;" data-placement="left" data-toggle="tooltip" title="Loading.." class="like unlike" type="post_like">
-               <span class="glyphicon glyphicon-thumbs-up"></span>
-               <span class="text" >Unlike</span>
-               (<span class="like-count"  >{%if status.likes %}{{status.likes}}{%endif%} </span>)
-             </a>
-           {% else %}
-             <a href="#" style="text-decoration: none;"  data-placement="left" data-toggle="tooltip" title="Loading.." class="like" type="post_like">
-               <span class="glyphicon glyphicon-thumbs-up"></span>
-               <span class="text" >Like</span>
-               (<span class="like-count"  >{{status.likes}} </span>)
-             </a>
-           {% endif %}
-           &nbsp;&nbsp;
-           <a href="javascript:void(0)" style="text-decoration: none;" class="comment">
-             <span class="glyphicon glyphicon-comment"></span> Comment
-             (<span class="comment-count">{{status.comments}}</span>)
-           </a>
-
-         </div>
-    	</div>
-
-      <div class="comments" style="display:none">
-        <form role="form" class="newcomment" method="post" action="" onsubmit="return false">
-          {% csrf_token %}
-          <input type="hidden" name="Status" value="{{status.id }}">
-          <input type="text" autocomplete="off" class="form-control input-sm" placeholder="Write a comment..." name="post" maxlength="255">
-        </form>
-
-        <div  class="Allcomments">
-
+<li class='container-fluid post_style_box' style="list-style-type: none;" post-id={{status.id}} csrf="{{ csrf_token }}">
+  <div class="Status">
+    <div class="upper_post">
+      {% ifequal status.username.username user.username  %}
+      <div class="edit_delete" id="status">
+        <div class="dropdown">
+          <button type="submit" class="edit_button_icon">
+            <span class="glyphicon glyphicon-chevron-down"></span>
+          </button>
+          <div class="dropdown-content" style="min-width: 60px;">
+            <a href="javascript:void(0)">Edit</a>
+            <a href="javascript:void(0)" class="delete_status">Delete</a>
+          </div>
         </div>
       </div>
+      {% endifequal %}
+      {%if status.username.profile.sid%}
+      {%if status.username.profile.sid.image%}
+      <img class="img-rounded " src="{{ status.username.profile.sid.image.url}}" alt="My image" width="42" height="42" />
+      {%endif%}
+      {%else%}
+      <img class="img-rounded" src="/static/img/profile_pic.png" alt="My image" width="42" height="42" />
+      {%endif%}
+
+
+
+      <a href="{% url 'profile_info' status.username.profile %}">{{status.username.profile.fname}}</a> {{status.title}}
+      {%if status.gid%}
+      <a href="{%url 'GroupsHomepage' status.gid.id%}">{{status.gid.gname}}</a>
+      {%endif%}
+      <br>
+      {{status.time|naturaltime}}<br>
+      {% if status.text %}
+
+      <br>{{status.text}}<br>
+      {% endif %}
+      {% if status.image  %}<br>
+      {% if ".jpg" in status.image.url or ".jpeg" in status.image.url or ".tif" in status.image.url or   ".png" in status.image.url or ".gif" in status.image.url %}
+      <a href="#" data-toggle="modal" data-target="#status-{{status.id}}">
+        <img class="img-rounded displayPopUp" getFrom={{status.id}} src="{{ status.image.url}}" alt="My image" width="100%" /></a>
+
+      {% else %}
+      <video controls class="video-js vjs-default-skin vjs-big-play-centered displayPopUp" width="100%" getFrom={{status.id}} height="360">
+        <source src="{{ status.image.url}}" type="video/mp4"></video>
+      {% endif %}
+      {% endif %}
+      <div class="post_button">
+
+
+        {% if status.is_like %}
+        <a href="#" style="text-decoration: none;" data-placement="left" data-toggle="tooltip" title="Loading.." class="like unlike" type="post_like">
+          <span class="glyphicon glyphicon-thumbs-up"></span>
+          <span class="text">Unlike</span>
+          (<span class="like-count">{%if status.likes %}{{status.likes}}{%endif%} </span>)
+        </a>
+        {% else %}
+        <a href="#" style="text-decoration: none;" data-placement="left" data-toggle="tooltip" title="Loading.." class="like" type="post_like">
+          <span class="glyphicon glyphicon-thumbs-up"></span>
+          <span class="text">Like</span>
+          (<span class="like-count">{{status.likes}} </span>)
+        </a>
+        {% endif %}
+        &nbsp;&nbsp;
+        <a href="javascript:void(0)" style="text-decoration: none;" class="comment">
+          <span class="glyphicon glyphicon-comment"></span> Comment
+          (<span class="comment-count">{{status.comments}}</span>)
+        </a>
+
+      </div>
     </div>
+
+    <div class="comments" style="display:none">
+      <form role="form" class="newcomment" method="post" action="" onsubmit="return false">
+        {% csrf_token %}
+        <input type="hidden" name="Status" value="{{status.id }}">
+        <input type="text" autocomplete="off" class="form-control input-sm" placeholder="Write a comment..." name="post" maxlength="255">
+      </form>
+
+      <div class="Allcomments">
+
+      </div>
+    </div>
+  </div>
 
 </li>

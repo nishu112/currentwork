@@ -1,34 +1,34 @@
 {% extends "friendsbook/structure.html" %}
 {% load static %}
 {%block head%}
-	<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
-	<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
+<link href="{% static 'css/post_page.css' %}" rel="stylesheet">
+<link href="{% static 'css/chatting.css' %}" rel="stylesheet">
 {%endblock head%}
 {% block content %}
 
-	<div class="row">
-			<div class="col-sm-2">
-			 {%include "groups/group_list.html"%}
-			</div>
-			<div class="col-sm-5">
-			{%include "uposts/only_post.html" %}<br>
-
-			</div>
-			<div class="col-sm-3">
-				<div class="container-fluid">
-					<div class="row">
-						<div class="col-sm-12">
-						{%include "user/partial/suggested_friends.html"%}
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-2">
-
-			{%include "chat/online_user_list.html"%}
-			</div>
+<div class="row">
+	<div class="col-sm-2">
+		{%include "groups/group_list.html"%}
+	</div>
+	<div class="col-sm-5">
+		{%include "uposts/only_post.html" %}<br>
 
 	</div>
+	<div class="col-sm-3">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-12">
+					{%include "user/partial/suggested_friends.html"%}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-2">
+
+		{%include "chat/online_user_list.html"%}
+	</div>
+
+</div>
 
 
 {%endblock%}

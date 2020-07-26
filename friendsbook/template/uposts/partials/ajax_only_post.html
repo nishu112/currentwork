@@ -1,8 +1,6 @@
+{% for status in posts%}
 
-	{% for status in posts%}
-
-		{%include "uposts/posts.html" %}
-		{%empty%}
-		<h2>No posts to show</h2>
-	{%endfor%}
-
+{%include "uposts/posts.html" %}
+{%empty%}
+<h2>No posts to show</h2>
+{%endfor%}

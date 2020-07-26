@@ -1,12 +1,17 @@
 .users-list {
-    height: auto;
-    overflow-y: auto;
+  height: auto;
+  overflow-y: auto;
 }
-#msg-list { overflow-y:auto;
-		margin-top:10px;
-		height:70vh;
-		margin-bottom:4px;}
-#chatform {margin-bottom:4px;}
-.msg_container{
 
+#msg-list {
+  overflow-y: auto;
+  margin-top: 10px;
+  height: 70vh;
+  margin-bottom: 4px;
 }
+
+#chatform {
+  margin-bottom: 4px;
+}
+
+.msg_container {}

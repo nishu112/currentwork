@@ -1,55 +1,55 @@
-$(function () {
+$(function() {
 
-  $("#mycover").click(function () {
+  $("#mycover").click(function() {
     $("#fileupload1").click();
   });
 
-  $("#mypic").click(function () {
+  $("#mypic").click(function() {
     $("#fileupload2").click();
   });
-  
+
   $("#fileupload1").fileupload({
     dataType: 'json',
-    done: function (e, data) {
+    done: function(e, data) {
       if (data.result.is_valid) {
-		  var str='url("'+data.result.url+'")'
-		  console.log("NOpe")
-		  console.log(str)
-        document.getElementById("cover_background").style.backgroundImage=str;
+        var str = 'url("' + data.result.url + '")'
+        console.log("NOpe")
+        console.log(str)
+        document.getElementById("cover_background").style.backgroundImage = str;
       }
-        /*$("#gallery tbody").prepend(
-          "<tr><td><a href='" + data.result.url + "'>" + data.result.name + "</a></td></tr>"
-        )*/
-      }
+      /*$("#gallery tbody").prepend(
+        "<tr><td><a href='" + data.result.url + "'>" + data.result.name + "</a></td></tr>"
+      )*/
+    }
   });
 
 
   $("#fileupload2").fileupload({
     dataType: 'json',
-    done: function (e, data) {
+    done: function(e, data) {
       if (data.result.is_valid) {
-        var str='"'+data.result.url+'"'
-		console.log(str)
-        document.getElementById("my_profile_pic").src=data.result.url;
+        var str = '"' + data.result.url + '"'
+        console.log(str)
+        document.getElementById("my_profile_pic").src = data.result.url;
       }
     }
   });
-  
-  
+
+
   $("#groupCoverPhoto").fileupload({
     dataType: 'json',
-    done: function (e, data) {
+    done: function(e, data) {
       if (data.result.is_valid) {
-		  var str='url("'+data.result.url+'")'
-        document.getElementById("cover_background").style.backgroundImage=str;
-		}
+        var str = 'url("' + data.result.url + '")'
+        document.getElementById("cover_background").style.backgroundImage = str;
       }
+    }
   });
-  
-  
+
+
   $('#groupcover').click(function() {
-	  console.log('done')
-	  $('#groupCoverPhoto').click();
-	  
+    console.log('done')
+    $('#groupCoverPhoto').click();
+
   });
 });

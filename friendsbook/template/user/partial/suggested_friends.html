@@ -1,9 +1,9 @@
-<div class="suggested_friends "style="position:fixed;">
+<div class="suggested_friends " style="position:fixed;">
 	<h4>Suggested Friends</h4>
 	<ul>
 		{%for x in friends_suggestion%}
 		<li>
-		<a href="{%url 'profile_info' x.profile.slug%}">{{x.profile.fname}}{%if x.profile.lname%} {{x.profile.lname}}{%endif%}</a>
+			<a href="{%url 'profile_info' x.profile.slug%}">{{x.profile.fname}}{%if x.profile.lname%} {{x.profile.lname}}{%endif%}</a>
 		</li>
 		{%empty%}
 		No suggestions right Now
@@ -19,6 +19,6 @@
 			<a href="{%url 'profile_info' x.username.profile.slug%}"> {{x.username.profile.fname}}{%if x.username.profile.lname%} {{x.username.profile.lname}}{%endif%}</a>
 		</li>
 		{%endfor%}
-	<ul>
-		{%endif%}
+		<ul>
+			{%endif%}
 </div>

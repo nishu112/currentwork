@@ -2,117 +2,115 @@
 {%load static%}
 {% block content %}
 {% load humanize %}
-		<div class="row">
-			<div class="col-sm-2">
+<div class="row">
+	<div class="col-sm-2">
 
-			 {% block sidebar %}
-<<<<<<< HEAD
+		{% block sidebar %}
+		<<<<<<< HEAD <form action="{%url 'advanceSearch'%}" method="GET"><input type='hidden' />{%csrf_token %}
 
-			 <form action="{%url 'advanceSearch'%}" method="GET"><input type='hidden'  />{%csrf_token %}
-
-			 {{ advanceSearchForm}}
-=======
-			 <br>
-			 <form action="{%url 'advanceSearch'%}" method="GET"><input type='hidden'  />{%csrf_token %}
+			{{ advanceSearchForm}}
+			=======
+			<br>
+			<form action="{%url 'advanceSearch'%}" method="GET"><input type='hidden' />{%csrf_token %}
 
 
 
 
-			   <div class="form-group">
-			         <button type="submit" class="btn btn-default ">
-			           Search
-			         </button>
+				<div class="form-group">
+					<button type="submit" class="btn btn-default ">
+						Search
+					</button>
 
-			       </div>
+				</div>
 
-			 </form>
+			</form>
 
 			{%endblock sidebar%}
+	</div>
+	<div class="col-sm-1"></div>
+	<div class="col-sm-5">
+		<div class="row">
+			<h1> <strong>People </strong></h1>
+		</div>
+
+
+		{% for profile,y in data%}
+		<div class="well particularuser" user={{profile.username}} csrf={{csrf_token}}>
+			<div class="add_friendbutton">
+				{%if profile.sid%}
+				{%if profile.sid.image%}
+				<img class="img-rounded" src="{{ profile.sid.image.url}}" alt="My image" width="42" height="42" />
+				{%endif%}
+				{%else%}
+				<img class="img-rounded" src="/static/img/profile_pic.png" alt="My image" width="42" height="42" />
+				{%endif%}
+				<a href={% url 'profile_info' profile.slug %}>{{profile.username.profile.fname}} {%if profile.username.profile.lname%} {{profile.username.profile.lname}} {%endif%}</a>
+				{%if user.username  !=  profile.username.username %}
+				{%if y is 0 or y is 1 or y is 2%}
+				<button class="btn btn-default type1" actiontype="type1" type="button" performaction="{%if y is 0%}Send{%elif y is 1%}Cancel{%elif y is 2%}Confirm{%endif%}" onclick="return false">
+					{%if y is 0%} Send request {%elif y is 1%} Cancel request{%elif y is 2%}Confirm Request{%endif%}
+				</button>
+				{%endif%}
+				{%if y is 2 or y is 3%}
+				<button class="btn btn-default type2" actiontype="type2" performaction="{%if y is 2%}Delete{%elif y is 3 %}Unfriend{%endif%}" type="button">
+					{%if y is 2%}Delete Request{%elif y is 3 %}Unfriend{%endif%}
+				</button>
+				{%endif%}
+				{%endif%}
 			</div>
-			<div class="col-sm-1"></div>
-			<div class="col-sm-5">
-				<div class="row">
-							<h1>  <strong>People </strong></h1>
-				</div>
+			<br>
+			{%if profie.lname%}
+			{{profile.lname}}</br>
+			{%endif%}
+			{%if profile.state%}
+			from {{profile.state}}</br>
+			{%endif%}
+			{{profile.emailid}}</br>
+			{{profile.gender}}
+		</div>
+		<br>
+		{%empty%}
+		<h1>No user Found</h1>
+		{%endfor%}
+		<div class="row">
+			<h1> <strong>Groups</strong></h1>
+		</div>
 
+		{% for group in sgroups %}
+		<div class="well particularuser" csrf={{csrf_token}}>
+			<div class="add_friendbutton">
+				{%if group.cover%}
+				{%if group.cover.image%}
+				<img class="img-rounded" src="{{ group.cover.image.url}}" alt="My image" width="42" height="42" />
+				{%endif%}
+				{%else%}
+				<img class="img-rounded" src="/static/img/cover.jpg" alt="My image" width="42" height="42" />
+				{%endif%}
 
-				{% for profile,y in data%}
-				<div class="well particularuser" user={{profile.username}} csrf={{csrf_token}}>
-					<div class="add_friendbutton" >
-						{%if profile.sid%}
-							{%if profile.sid.image%}
-								<img class="img-rounded" src="{{ profile.sid.image.url}}" alt="My image" width="42" height="42"/>
-							{%endif%}
-						{%else%}
-								<img class="img-rounded" src="/static/img/profile_pic.png" alt="My image" width="42" height="42"/>
-						{%endif%}
-						<a href={% url 'profile_info' profile.slug %}>{{profile.username.profile.fname}} {%if profile.username.profile.lname%} {{profile.username.profile.lname}} {%endif%}</a>
-						{%if user.username  !=  profile.username.username %}
-								{%if y is 0 or y is 1 or y is 2%}
-										<button class="btn btn-default type1" actiontype="type1" type="button" performaction="{%if y is 0%}Send{%elif y is 1%}Cancel{%elif y is 2%}Confirm{%endif%}" onclick="return false"  >
-										{%if y is 0%} Send request {%elif y is 1%} Cancel request{%elif y is 2%}Confirm Request{%endif%}
-										</button>
-								{%endif%}
-								{%if y is 2 or y is 3%}
-								<button class="btn btn-default type2" actiontype="type2" performaction="{%if y is 2%}Delete{%elif y is 3 %}Unfriend{%endif%}" type="button">
-									{%if y is 2%}Delete Request{%elif y is 3 %}Unfriend{%endif%}
-								</button>
-								{%endif%}
-						{%endif%}
-					</div>
-					<br>
-					{%if profie.lname%}
-						{{profile.lname}}</br>
-					{%endif%}
-					{%if profile.state%}
-						from {{profile.state}}</br>
-					{%endif%}
-					{{profile.emailid}}</br>
-					{{profile.gender}}
-				</div>
-					<br>
-				{%empty%}
-					<h1>No user Found</h1>
-					{%endfor%}
-				<div class="row">
-							<h1>  <strong>Groups</strong></h1>
-				</div>
-
-				{% for group in sgroups %}
-				<div class="well particularuser"  csrf={{csrf_token}}>
-					<div class="add_friendbutton" >
-						{%if group.cover%}
-							{%if group.cover.image%}
-								<img class="img-rounded" src="{{ group.cover.image.url}}" alt="My image" width="42" height="42"/>
-							{%endif%}
-						{%else%}
-								<img class="img-rounded" src="/static/img/cover.jpg" alt="My image" width="42" height="42"/>
-						{%endif%}
-
-					<a href="{%url 'GroupsHomepage' group.id%}">	{{group.gname}} </a>
-					</div>
-
-
-					created {{group.time|naturaltime}} with {{group.privacy}} privacy
-					{%if group.about%}
-					<br>
-						{{group.about}}
-					{%endif%}
-				</div>
-					{% endfor %}
-
-			<div class="col-sm-2">
+				<a href="{%url 'GroupsHomepage' group.id%}"> {{group.gname}} </a>
 			</div>
-			<div class="col-sm-2">
 
-			</div>
+
+			created {{group.time|naturaltime}} with {{group.privacy}} privacy
+			{%if group.about%}
+			<br>
+			{{group.about}}
+			{%endif%}
+		</div>
+		{% endfor %}
+
+		<div class="col-sm-2">
+		</div>
+		<div class="col-sm-2">
 
 		</div>
-{% endblock %}
-{% block javascript%}
-<script src="{% static 'js/addfriends/friendrequest.js' %}"></script>
-<script>
-/*var load_friends_list = function () {
+
+	</div>
+	{% endblock %}
+	{% block javascript%}
+	<script src="{% static 'js/addfriends/friendrequest.js' %}"></script>
+	<script>
+		/*var load_friends_list = function () {
     if (!$("#load_feed").hasClass("no-more-feeds")) {
       var page = $("#load_feed input[name='page']").val();
       var next_page = parseInt($("#load_feed input[name='page']").val()) + 1;
@@ -142,5 +140,5 @@
 
   $("#load_feed").bind("enterviewport", load_timeline_posts).bullseye();
 */
-</script>
-{%endblock %}
+	</script>
+	{%endblock %}

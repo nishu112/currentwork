@@ -1,25 +1,26 @@
 <div class="sidebar-nav-fixed affix">
 	<div class="well bs-sidebar" id="sidebar" style="background-color:#fff">
-	<div style="font-weight:bold ;text-align: center;">Groups</div>
-		<ul class="nav nav-pills nav-stacked"  id="Groups" size="8" onchange="showUser(this.value)" >
-		{% for group in groups %}
+		<div style="font-weight:bold ;text-align: center;">Groups</div>
+		<ul class="nav nav-pills nav-stacked" id="Groups" size="8" onchange="showUser(this.value)">
+			{% for group in groups %}
 			<li>
 				<a data-group="{{ group|escape }}" href="{%url 'GroupsHomepage' group.gid.id%}">
-				<div class="group_detail">
-					<div class="detail">
-						{{group.gid.gname}}
+					<div class="group_detail">
+						<div class="detail">
+							{{group.gid.gname}}
+						</div>
 					</div>
-				</div>
 				</a>
 			</li>
 			{% endfor %}
 			<li>
-				<div  style="margin-bottom: 20px;">
-						<button type="button" class="btn btn-primary " data-toggle="modal" data-target="#myModal">
-						  <span class="	glyphicon glyphicon-plus" ></span> Create Group
-						</button>
+				<div style="margin-bottom: 20px;">
+					<button type="button" class="btn btn-primary " data-toggle="modal" data-target="#myModal">
+						<span class="	glyphicon glyphicon-plus"></span> Create Group
+					</button>
 				</div>
 			</li>
 		</ul>
-	</div><!--col-sm-2-->
+	</div>
+	<!--col-sm-2-->
 </div>

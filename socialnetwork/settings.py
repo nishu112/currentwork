@@ -16,13 +16,8 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SETTINGS_DIR = os.path.dirname(__file__)
 
-
 PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
 PROJECT_PATH = os.path.abspath(PROJECT_PATH)
-
-
-
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -48,14 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'friendsbook',
+    'friendsbook',
     'channels',
-	'django_ajax',
+    'django_ajax',
     'widget_tweaks',
     'django.contrib.humanize',
 ]
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -97,7 +90,6 @@ CHANNEL_LAYERS = {
     }
 }
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -111,7 +103,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -131,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -143,8 +133,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False #TimeZone
-
+USE_TZ = False  # TimeZone
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -152,9 +141,9 @@ USE_TZ = False #TimeZone
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/Friendsbook/socialnetwork/friendsbook/static/',
-	 ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
+    ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
 ]
 
 STATIC_URL = '/static/'
 
-MEDIA_URL  = '/media/'
+MEDIA_URL = '/media/'

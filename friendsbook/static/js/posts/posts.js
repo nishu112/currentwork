@@ -1,70 +1,79 @@
-$(function () {
-$(document).on("mouseenter", "div.Allcomments .like", function () {
-	console.log('likes')
-	id=$(this).closest('.particularcomment').attr('id')
-	title=$(this)
-	console.log(title)
-	$.ajax({
-		url:'/ajax/SeeLikedCommentUsers/',
-		data:{'id':id},
-		cache: false,
-		success: function (data) {
- 		console.log(data)
-		if(data=="")	{$(title).attr('data-original-title','No Likes');return ;}
-		$('[data-toggle="tooltip"]').tooltip();
-		$(title).attr('data-original-title',data);
+$(function() {
+  $(document).on("mouseenter", "div.Allcomments .like", function() {
+    console.log('likes')
+    id = $(this).closest('.particularcomment').attr('id')
+    title = $(this)
+    console.log(title)
+    $.ajax({
+      url: '/ajax/SeeLikedCommentUsers/',
+      data: {
+        'id': id
+      },
+      cache: false,
+      success: function(data) {
+        console.log(data)
+        if (data == "") {
+          $(title).attr('data-original-title', 'No Likes');
+          return;
+        }
+        $('[data-toggle="tooltip"]').tooltip();
+        $(title).attr('data-original-title', data);
 
-		    $('[data-toggle="tooltip"]').tooltip();
-		}
-	});
+        $('[data-toggle="tooltip"]').tooltip();
+      }
+    });
 
-});
-$(document).on("mouseenter", "div.upper_post .like", function () {
-	console.log('posts likes')
-	var li = $(this).closest("li");
-	var id = $(li).attr("post-id");
-	console.log(id)
-	title=$(this);
+  });
+  $(document).on("mouseenter", "div.upper_post .like", function() {
+    console.log('posts likes')
+    var li = $(this).closest("li");
+    var id = $(li).attr("post-id");
+    console.log(id)
+    title = $(this);
 
 
-	$.ajax({
-		url:'/ajax/SeeLikedPostsUsers/',
-		data:{'id':id},
-		cache: false,
-		success: function (data) {
- 		console.log(data)
-		if(data=="")	return;
-		$('[data-toggle="tooltip"]').tooltip();
-		if(data=="")	{$(title).attr('data-original-title','No Likes');return ;}
-		$(title).attr('data-original-title',data);
-		    $('[data-toggle="tooltip"]').tooltip();
-		}
-	});
-});
-		$(document).on("click", "div.upper_post .like", function () {
+    $.ajax({
+      url: '/ajax/SeeLikedPostsUsers/',
+      data: {
+        'id': id
+      },
+      cache: false,
+      success: function(data) {
+        console.log(data)
+        if (data == "") return;
+        $('[data-toggle="tooltip"]').tooltip();
+        if (data == "") {
+          $(title).attr('data-original-title', 'No Likes');
+          return;
+        }
+        $(title).attr('data-original-title', data);
+        $('[data-toggle="tooltip"]').tooltip();
+      }
+    });
+  });
+  $(document).on("click", "div.upper_post .like", function() {
 
-		var type=$(this).attr("type");
-		var li = $(this).closest("li");
-		var id = $(li).attr("post-id");
-		var upper_post=$(this).closest(".upper_post");
-		var csrf = $(li).attr("csrf");
+    var type = $(this).attr("type");
+    var li = $(this).closest("li");
+    var id = $(li).attr("post-id");
+    var upper_post = $(this).closest(".upper_post");
+    var csrf = $(li).attr("csrf");
 
     $.ajax({
       url: '/ajax/like_post/',
       data: {
-				'id':id,
-				'type':type,
+        'id': id,
+        'type': type,
         'csrfmiddlewaretoken': csrf,
       },
       type: 'POST',
       cache: false,
-      success: function (data) {
+      success: function(data) {
 
         if ($(".like", upper_post).hasClass("unlike")) {
           $(".like", upper_post).removeClass("unlike");
           $(".like .text", upper_post).text("Like");
-        }
-        else {
+        } else {
           $(".like", upper_post).addClass("unlike");
           $(".like .text", upper_post).text("Unlike");
         }
@@ -75,203 +84,200 @@ $(document).on("mouseenter", "div.upper_post .like", function () {
     return false;
   });
 
-$(document).on("click", "div.upper_post .delete_status", function () {
+  $(document).on("click", "div.upper_post .delete_status", function() {
 
-	var li = $(this).closest("li");
-	var id = $(li).attr("post-id");
-	var upper_post=$(this).closest(".upper_post")
-	var csrf = $(li).attr("csrf");
-	type=$(this).attr('class')
+    var li = $(this).closest("li");
+    var id = $(li).attr("post-id");
+    var upper_post = $(this).closest(".upper_post")
+    var csrf = $(li).attr("csrf");
+    type = $(this).attr('class')
 
-	$.ajax({
-		url: '/ajax/deleteCommentPost/',
-		data: {
-			'id':id,
-			'type':type,
-			'csrfmiddlewaretoken': csrf,
-		},
-		type: 'POST',
-		cache: false,
-		success: function (data) {
+    $.ajax({
+      url: '/ajax/deleteCommentPost/',
+      data: {
+        'id': id,
+        'type': type,
+        'csrfmiddlewaretoken': csrf,
+      },
+      type: 'POST',
+      cache: false,
+      success: function(data) {
 
-			$(li).fadeOut(400, function () {
+        $(li).fadeOut(400, function() {
           $(li).remove();
         });
-		}
-	});
+      }
+    });
 
-});
+  });
 
 
-	$(document).on("click", "div.Allcomments .like", function () {
+  $(document).on("click", "div.Allcomments .like", function() {
 
-    id=$(this).closest('.particularcomment').attr('id')
-		type=$(this).attr('type')
-		particularcomment=$(this).closest('.particularcomment')
-		 var li = $(this).closest("li");
-		var csrf = $(li).attr("csrf");
+    id = $(this).closest('.particularcomment').attr('id')
+    type = $(this).attr('type')
+    particularcomment = $(this).closest('.particularcomment')
+    var li = $(this).closest("li");
+    var csrf = $(li).attr("csrf");
 
-		$.ajax({
-			url: '/ajax/like_post/',
-			data:{
-				'id':id,
-				'type':type,
-				'csrfmiddlewaretoken': csrf,
-			},
-			type:'POST',
-			dataType: 'json',
-			success: function (data) {
+    $.ajax({
+      url: '/ajax/like_post/',
+      data: {
+        'id': id,
+        'type': type,
+        'csrfmiddlewaretoken': csrf,
+      },
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
         if ($(".like", particularcomment).hasClass("unlike")) {
           $(".like", particularcomment).removeClass("unlike");
           $(".like .text", particularcomment).text("Like");
-        }
-        else {
+        } else {
           $(".like", particularcomment).addClass("unlike");
           $(".like .text", particularcomment).text("Unlike");
         }
         $(".like .like-count", particularcomment).text(data);
-			}
+      }
 
-	});
-});
-
-
-$(document).on("click", "div.Allcomments .delete_comment", function () {
-
-	id=$(this).closest('.particularcomment').attr('id')
-	type=$(this).attr('class')
-	particularcomment=$(this).closest('.particularcomment')
-	var li = $(this).closest("li");
-	var csrf = $(li).attr("csrf");
+    });
+  });
 
 
-	$.ajax({
-		url: '/ajax/deleteCommentPost/',
-		data:{
-			'id':id,
-			'type':type,
-			'csrfmiddlewaretoken': csrf,
-		},
-		type:'POST',
-		dataType: 'json',
-		success: function (data) {
+  $(document).on("click", "div.Allcomments .delete_comment", function() {
 
-			$(particularcomment).fadeOut(400, function () {
+    id = $(this).closest('.particularcomment').attr('id')
+    type = $(this).attr('class')
+    particularcomment = $(this).closest('.particularcomment')
+    var li = $(this).closest("li");
+    var csrf = $(li).attr("csrf");
+
+
+    $.ajax({
+      url: '/ajax/deleteCommentPost/',
+      data: {
+        'id': id,
+        'type': type,
+        'csrfmiddlewaretoken': csrf,
+      },
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
+
+        $(particularcomment).fadeOut(400, function() {
           $(particularcomment).remove();
         });
-		}
+      }
 
-});
-});
+    });
+  });
 
 
-$(document).on("click", "div.post_button .comment", function () {
+  $(document).on("click", "div.post_button .comment", function() {
 
-	var li = $(this).closest("li");
-	if($(".comments", li).css('display') != 'none')
-			{
-				$(".comments", li).slideUp();
-			}
-	else
-	{
-		$(".comments", li).show();
-		$(".comments input[name='post']", li).focus();
-		var sid = $(li).attr("post-id");
-		$.ajax({
-		url: '/ajax/loadcomment/',
-		data:{
-			'sid':sid,
-		},
-		type:'GET',
-		dataType: 'json',
-		beforeSend: function () {
+    var li = $(this).closest("li");
+    if ($(".comments", li).css('display') != 'none') {
+      $(".comments", li).slideUp();
+    } else {
+      $(".comments", li).show();
+      $(".comments input[name='post']", li).focus();
+      var sid = $(li).attr("post-id");
+      $.ajax({
+        url: '/ajax/loadcomment/',
+        data: {
+          'sid': sid,
+        },
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function() {
           $(".Allcomments", li).html("<li class='loadcomment'><img src='/static/img/loading.gif'></li>");
         },
-		success: function (data) {
-			$(".Allcomments", li).html(data);
-			return;
-			}
-		});
-		}
+        success: function(data) {
+          $(".Allcomments", li).html(data);
+          return;
+        }
+      });
+    }
 
-});
+  });
 
-$(document).on("click", "div.Allcomments .edit_comment", function () {
-
-
-particularcomment=$(this).closest('.particularcomment')
-
-	orignalcomment=$(this).closest('.orignalcomment')
-	editcomment=$(particularcomment).children('.editcomment');
-
-	//editcomment=$(this).closest('.editcomment')
-	$(orignalcomment).hide()
-	$(editcomment).show()
+  $(document).on("click", "div.Allcomments .edit_comment", function() {
 
 
-	});
+    particularcomment = $(this).closest('.particularcomment')
+
+    orignalcomment = $(this).closest('.orignalcomment')
+    editcomment = $(particularcomment).children('.editcomment');
+
+    //editcomment=$(this).closest('.editcomment')
+    $(orignalcomment).hide()
+    $(editcomment).show()
+
+
+  });
 
 
 
 
-$(document).on("keydown", ".editcomment input[name='post']", function (evt){
-	var keyCode = evt.which?evt.which:evt.keyCode;
-  if (keyCode == 13) {
- 	 form = $(this).closest("form");
- 	 container = $(this).closest(".comments");
-	 particularcomment=$(this).closest('.particularcomment')
-	 editcomment=$(this).closest('.editcomment')
-	 orignalcomment=$(particularcomment).children('.orignalcomment')
-	 currenttext=$(editcomment).children('input[name="post"]')
-	 oldtext=$(orignalcomment).children('')
+  $(document).on("keydown", ".editcomment input[name='post']", function(evt) {
+    var keyCode = evt.which ? evt.which : evt.keyCode;
+    if (keyCode == 13) {
+      form = $(this).closest("form");
+      container = $(this).closest(".comments");
+      particularcomment = $(this).closest('.particularcomment')
+      editcomment = $(this).closest('.editcomment')
+      orignalcomment = $(particularcomment).children('.orignalcomment')
+      currenttext = $(editcomment).children('input[name="post"]')
+      oldtext = $(orignalcomment).children('')
 
- 	 $.ajax({
- 		 url: "/ajax/editcomment/",
- 		 data: $(form).serialize(),
- 		 type: 'POST',
- 		 cache: false,
- 		 success: function (data) {
- 			 if(data==0)
-				 {alert('Something Fishy Going on')
-				 return;}
+      $.ajax({
+        url: "/ajax/editcomment/",
+        data: $(form).serialize(),
+        type: 'POST',
+        cache: false,
+        success: function(data) {
+          if (data == 0) {
+            alert('Something Fishy Going on')
+            return;
+          }
 
-				 $(particularcomment).html(data)
- 		 }
- 	 });
- 	 return false;
-  }
- });
+          $(particularcomment).html(data)
+        }
+      });
+      return false;
+    }
+  });
 
-$(document).on("keydown", ".comments .newcomment input[name='post']", function (evt){
-	 var keyCode = evt.which?evt.which:evt.keyCode;
-	 if (keyCode == 13) {
-		 var form = $(this).closest("form");
-		 var container = $(this).closest(".comments");
-		 text=$(form).children("input[name='post']")
-		 console.log(text.val())
-		 if(text.val()=="")	return;
-		 var input = $(this);
-		 $.ajax({
-			 url: '/ajax/loadcomment/',
-			 data: $(form).serialize(),
-			 type: 'POST',
-			 cache: false,
-			 beforeSend: function () {
-				 $(input).val("");
-			 },
-			 success: function (data) {
-				 $(".Allcomments", container).append(data);
-				 if ($(".Allcomments li", container).hasClass("empty")) {
+  $(document).on("keydown", ".comments .newcomment input[name='post']", function(evt) {
+    var keyCode = evt.which ? evt.which : evt.keyCode;
+    if (keyCode == 13) {
+      var form = $(this).closest("form");
+      var container = $(this).closest(".comments");
+      text = $(form).children("input[name='post']")
+      console.log(text.val())
+      if (text.val() == "") return;
+      var input = $(this);
+      $.ajax({
+        url: '/ajax/loadcomment/',
+        data: $(form).serialize(),
+        type: 'POST',
+        cache: false,
+        beforeSend: function() {
+          $(input).val("");
+        },
+        success: function(data) {
+          $(".Allcomments", container).append(data);
+          if ($(".Allcomments li", container).hasClass("empty")) {
 
-          deletedelement= $(".Allcomments li", container);
-					 $(deletedelement).fadeOut(400, function () {
-		           $(deletedelement).remove();
-		         });
-					 }
-			 }
-		 });
-		 return false;
-	 }
- });
+            deletedelement = $(".Allcomments li", container);
+            $(deletedelement).fadeOut(400, function() {
+              $(deletedelement).remove();
+            });
+          }
+        }
+      });
+      return false;
+    }
+  });
 
 });

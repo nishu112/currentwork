@@ -2,181 +2,183 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head >
+<head>
 	<title>{% block title %}Friendsbook{% endblock %}</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
-	<link rel="stylesheet" href="{% static 'css/home.css' %}" type = "text/css"/>
-	<link rel="stylesheet" href="{% static 'css/notification.css' %}" type = "text/css"/>
+	<link rel="stylesheet" href="{% static 'css/home.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'css/notification.css' %}" type="text/css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
 
-<!--
+	<!--
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 -->
-<script  src="{% static 'js/posts/jquery.bullseye-1.0-min.js' %}"></script>
+	<script src="{% static 'js/posts/jquery.bullseye-1.0-min.js' %}"></script>
 	{% block head %}
 
 	{% endblock head %}
 
 </head>
 
-<body  style="padding-top: 60px;">
+<body style="padding-top: 60px;">
 
-{%include "friendsbook/header.html"%}
-<main>
-	{%include "friendsbook/emptyModalForPosts.html"%}
-<div class="container-fluid">
-{%include "groups/create_groups.html"%}
-		{% block content %}
-		{% endblock content%}
+	{%include "friendsbook/header.html"%}
+	<main>
+		{%include "friendsbook/emptyModalForPosts.html"%}
+		<div class="container-fluid">
+			{%include "groups/create_groups.html"%}
+			{% block content %}
+			{% endblock content%}
 
-</div>
-</main>
+		</div>
+	</main>
 
 
 	<script src="{% static 'custom/home.js' %}"></script>
 	<script src="{% static 'js/profile/profile.js' %}"></script>
 	<script src="{% static 'custom/chatting.js' %}"></script>
-	  <script src="{% static 'js/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
-  <script src="{% static 'js/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
-  <script src="{% static 'js/jquery-file-upload/jquery.fileupload.js' %}"></script>
-  <script src="{% static 'js/js/basic-upload.js' %}"></script>
-  <script src="{% static 'custom/messaging.js' %}" type="text/javascript"></script>
+	<script src="{% static 'js/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+	<script src="{% static 'js/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+	<script src="{% static 'js/jquery-file-upload/jquery.fileupload.js' %}"></script>
+	<script src="{% static 'js/js/basic-upload.js' %}"></script>
+	<script src="{% static 'custom/messaging.js' %}" type="text/javascript"></script>
 
 
 
-  <script>
-
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-});
-	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-	var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/users/');
-	var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/{{user.username}}/');
-	socket.onclose = function(){
-	        // Try to reconnect in 5 seconds
-	        setTimeout(function(){
-						console.log('trying to connect')
-						var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/users/');
-						var socket = new WebSocket(ws_scheme+'://' + window.location.host + '/{{user.username}}/');
-
-					}, 5000);
-	    };
-    socket.onopen = function open() {
-
-      console.log('WebSockets connection created.');
-
-			type='read_messages';
-			user='{{fuser_obj}}'
-			fuser='{{request.user}}'
-			if(user!="" && fuser!=""){
-			var message ={
-				user,type,fuser
-			};
-			socket.send(JSON.stringify(message));
-		}
-    };
-
-    socket.onmessage = function message(event) {
-    var data = JSON.parse(event.data);
-	  var type = data['type'];
-
-	  var user = data['user'];
-	  //did this logic to satisfy condition
-	  //so that message will recieve only if
-	  //we clicked on the link
-		var online_user=$('.users-list a div').filter(function(){
-		return $(this).data('username')==user;
+	<script>
+		$(document).ready(function() {
+			$('[data-toggle="tooltip"]').tooltip();
 		});
-	  if(type=='online'){
+		var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+		var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/users/');
+		var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/{{user.username}}/');
+		socket.onclose = function() {
+			// Try to reconnect in 5 seconds
+			setTimeout(function() {
+				console.log('trying to connect')
+				var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/users/');
+				var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/{{user.username}}/');
 
-		  var fname=data['fname'];
-		  var lname=data['lname'];
-		  if(lname){}
-		  else lname="";
-		  if(data['is_logged_in'])
-		  online_user.html('<span style="background: rgb(66, 183, 42); border-radius: 50%; display: inline-block;float:right; height: 6px; margin-left: 4px;float:right;margin-top: 17px; width: 6px;"></span>');
-		  else
-		  online_user.html('');
-		  return;
-	  }
-		selected_user='{{fuser_obj}}';
-	  var text = data['text'];
-	  var fuser = data['fuser'];
-		console.log(user)
-		console.log(selected_user)
-		console.log(type)
-		if(type=="read_messages" && selected_user==user)
-			{
-				console.log('done123')
-			$('.is_read').html('✔✔');
-			type='update'
-			var message ={
-				user,type,fuser
-			};
-			console.log(message)
-			console.log('update in database')
-			socket.send(JSON.stringify(message));
-			return;
+			}, 5000);
+		};
+		socket.onopen = function open() {
+
+			console.log('WebSockets connection created.');
+
+			type = 'read_messages';
+			user = '{{fuser_obj}}'
+			fuser = '{{request.user}}'
+			if (user != "" && fuser != "") {
+				var message = {
+					user,
+					type,
+					fuser
+				};
+				socket.send(JSON.stringify(message));
 			}
-		if(type=="read_messages" && selected_user!=user)	return;
-			if( selected_user==user)
-		  	{
-				content=data['content'];
+		};
+
+		socket.onmessage = function message(event) {
+			var data = JSON.parse(event.data);
+			var type = data['type'];
+
+			var user = data['user'];
+			//did this logic to satisfy condition
+			//so that message will recieve only if
+			//we clicked on the link
+			var online_user = $('.users-list a div').filter(function() {
+				return $(this).data('username') == user;
+			});
+			if (type == 'online') {
+
+				var fname = data['fname'];
+				var lname = data['lname'];
+				if (lname) {} else lname = "";
+				if (data['is_logged_in'])
+					online_user.html('<span style="background: rgb(66, 183, 42); border-radius: 50%; display: inline-block;float:right; height: 6px; margin-left: 4px;float:right;margin-top: 17px; width: 6px;"></span>');
+				else
+					online_user.html('');
+				return;
+			}
+			selected_user = '{{fuser_obj}}';
+			var text = data['text'];
+			var fuser = data['fuser'];
+			console.log(user)
+			console.log(selected_user)
+			console.log(type)
+			if (type == "read_messages" && selected_user == user) {
+				console.log('done123')
+				$('.is_read').html('✔✔');
+				type = 'update'
+				var message = {
+					user,
+					type,
+					fuser
+				};
+				console.log(message)
+				console.log('update in database')
+				socket.send(JSON.stringify(message));
+				return;
+			}
+			if (type == "read_messages" && selected_user != user) return;
+			if (selected_user == user) {
+				content = data['content'];
 				console.log(content)
 				console.log('content reached')
 				$('#msg-list').append(content)
 
-			  $('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
-				type='read_messages';
-				fuser='{{request.user}}'
-				var message ={
-					user,type,fuser
+				$('#msg-list').scrollTop(document.getElementById("msg-list").scrollHeight);
+				type = 'read_messages';
+				fuser = '{{request.user}}'
+				var message = {
+					user,
+					type,
+					fuser
 				};
 				console.log(message)
 				console.log('sending message acknowledgement')
 				socket.send(JSON.stringify(message));
 
-				}
-			else{
-				Messages=$('.users-list a span').filter(function(){
-				return $(this).data('messages_from')==user;
+			} else {
+				Messages = $('.users-list a span').filter(function() {
+					return $(this).data('messages_from') == user;
 				});
 				console.log(Messages)
-				unread=$(Messages).html()
-				if(unread=="")	$(Messages).html(1);
+				unread = $(Messages).html()
+				if (unread == "") $(Messages).html(1);
 				else {
-				$(Messages).html(parseInt(unread)+1);
+					$(Messages).html(parseInt(unread) + 1);
 				}
 			}
-    };
-    if (socket.readyState == WebSocket.OPEN) {
-      socket.onopen();
-    }
-$(document).on("click",".displayPopUp",function(){
-	console.log("really ok")
-	console.log($(this).attr('getFrom'))
-	id=$(this).attr('getFrom')
-	$.ajax({
-		url:"{%url 'getSinglePost' %}",
-		data:{'id':id},
-		success: function (data) {
-				 console.log(data)
-				 $('.postsContent').html(data);
-				 $('#showPostsAfterClickOnImages').modal('show');
-			 }
-	});
-	//getFrom={{status.id}}
-});
+		};
+		if (socket.readyState == WebSocket.OPEN) {
+			socket.onopen();
+		}
+		$(document).on("click", ".displayPopUp", function() {
+			console.log("really ok")
+			console.log($(this).attr('getFrom'))
+			id = $(this).attr('getFrom')
+			$.ajax({
+				url: "{%url 'getSinglePost' %}",
+				data: {
+					'id': id
+				},
+				success: function(data) {
+					console.log(data)
+					$('.postsContent').html(data);
+					$('#showPostsAfterClickOnImages').modal('show');
+				}
+			});
+			//getFrom={{status.id}}
+		});
+	</script>
 
-  </script>
-
-	  {% block javascript %}
-		{% endblock  %}
+	{% block javascript %}
+	{% endblock  %}
 
 
 </body>

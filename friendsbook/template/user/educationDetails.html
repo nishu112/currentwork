@@ -2,9 +2,9 @@
 {% load static %}
 {%block head%}
 
-	{%block contentFromSettings%}
+{%block contentFromSettings%}
 
-	{%endblock contentFromSettings%}
+{%endblock contentFromSettings%}
 
 {%endblock head%}
 {% block content %}
@@ -14,19 +14,19 @@
 		<h2>Personal Details:</h2>
 	</div>
 
-	<form action="" method="post"><input type='hidden'  />{%csrf_token %}
-    <fieldset>
-    <legend>
-      Study Details:
-    </legend>
-</fieldset>
-	{{ form }}
-	<div class="form-group">
-      <div class="">
-        <button type="submit" class="btn btn-default">Submit</button>
-		<button type="submit" onclick="{%url 'workDetail'%}" class="btn btn-default">Skip</button>
-      </div>
-    </div>
+	<form action="" method="post"><input type='hidden' />{%csrf_token %}
+		<fieldset>
+			<legend>
+				Study Details:
+			</legend>
+		</fieldset>
+		{{ form }}
+		<div class="form-group">
+			<div class="">
+				<button type="submit" class="btn btn-default">Submit</button>
+				<button type="submit" onclick="{%url 'workDetail'%}" class="btn btn-default">Skip</button>
+			</div>
+		</div>
 
 
 	</form>
