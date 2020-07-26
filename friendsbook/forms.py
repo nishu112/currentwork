@@ -135,7 +135,7 @@ class CreatePost(ModelForm):
 		text = cleaned_data.get('text')
 		image = cleaned_data.get('image')
 		privacy = cleaned_data.get('privacy')
-		if not text and not image and not privacy or not privacy :
+		if not text and not image and not privacy or not privacy or not text and not image:
 			raise forms.ValidationError("Don't submit empty")
 
 
@@ -171,7 +171,7 @@ class CreateGroup(ModelForm):
 		fields=["gname","privacy"]
 
 	def clean(self):
-		cleaned_data = super(CreateGroupPost, self).clean()
+		cleaned_data = super(CreateGroup, self).clean()
 		gname = cleaned_data.get('gname')
 		privacy = cleaned_data.get('privacy')
 		if not gname or not privacy:
