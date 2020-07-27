@@ -6,4 +6,4 @@ services:
 before_script: pip install docker-compose
 
 script:
-  - docker-compose up --build
+  - docker-compose build
