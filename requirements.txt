@@ -23,7 +23,7 @@ asgi-redis==1.4.3
 asgiref==1.1.2
 asn1crypto==0.24.0
 attrs==19.3.0
-autobahn==17.10.1
+autobahn==20.12.3
 Automat==0.6.0
 awesome-slugify==1.6.5
 certifi==2017.11.5
